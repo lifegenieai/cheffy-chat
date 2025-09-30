@@ -25,17 +25,22 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
 
   // Extract recipe JSON if present (wrapped in ```recipe-json ... ```)
   const extractRecipe = (text: string): { recipe: Recipe | null; cleanText: string } => {
+    // First, remove any recipe-json blocks (even incomplete ones during streaming)
+    let cleanText = text.replace(/```recipe-json[\s\S]*?```/g, '').trim();
+    // Also remove incomplete blocks that might be streaming
+    cleanText = cleanText.replace(/```recipe-json[\s\S]*$/g, '').trim();
+    
+    // Try to parse complete recipe blocks
     const recipeMatch = text.match(/```recipe-json\n([\s\S]*?)\n```/);
     if (recipeMatch) {
       try {
         const recipe = JSON.parse(recipeMatch[1]) as Recipe;
-        const cleanText = text.replace(/```recipe-json\n[\s\S]*?\n```/, '').trim();
         return { recipe, cleanText };
       } catch (e) {
         console.error('Failed to parse recipe:', e);
       }
     }
-    return { recipe: null, cleanText: text };
+    return { recipe: null, cleanText };
   };
 
   const { recipe, cleanText } = extractRecipe(message);
