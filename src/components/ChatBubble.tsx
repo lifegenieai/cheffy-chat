@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ChatBubbleProps {
   message: string;
@@ -32,9 +34,17 @@ const ChatBubble = ({ message, role, timestamp }: ChatBubbleProps) => {
             : "bg-secondary text-secondary-foreground"
         )}
       >
-        <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
-          {message}
-        </p>
+        {isUser ? (
+          <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
+            {message}
+          </p>
+        ) : (
+          <div className="prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-ul:text-foreground prose-ol:text-foreground prose-li:text-foreground prose-table:text-foreground prose-th:text-foreground prose-td:text-foreground">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {message}
+            </ReactMarkdown>
+          </div>
+        )}
       </div>
       <span className="text-xs text-muted-foreground mt-1.5 px-1 opacity-60">
         {formatTime(timestamp)}
