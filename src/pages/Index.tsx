@@ -32,18 +32,6 @@ const Index = () => {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  const mockAIResponses = [
-    "I'd be delighted to assist you with that recipe. Let me guide you through the process with precision.",
-    "Excellent choice. I'll provide you with detailed instructions and professional techniques to ensure optimal results.",
-    "Allow me to share my expertise on this matter. I'll walk you through each step methodically.",
-    "I'm pleased to help you explore this culinary technique. Let me explain the fundamentals.",
-    "That's an interesting inquiry. I'll provide you with comprehensive guidance based on classical techniques."
-  ];
-
-  const getRandomResponse = () => {
-    return mockAIResponses[Math.floor(Math.random() * mockAIResponses.length)];
-  };
-
   const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -55,17 +43,98 @@ const Index = () => {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Simulate AI response with 2-second delay
-    setTimeout(() => {
-      const aiMessage: Message = {
+    try {
+      const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+      
+      const response = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          messages: [...messages, userMessage].map(m => ({ 
+            role: m.role, 
+            content: m.content 
+          }))
+        }),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error("Failed to connect to AI service");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+      let streamDone = false;
+      let assistantContent = "";
+      let assistantMessageId = (Date.now() + 1).toString();
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            
+            if (content) {
+              assistantContent += content;
+              
+              setMessages(prev => {
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg?.role === 'assistant' && lastMsg.id === assistantMessageId) {
+                  return prev.map(m => 
+                    m.id === assistantMessageId 
+                      ? { ...m, content: assistantContent }
+                      : m
+                  );
+                }
+                return [...prev, {
+                  id: assistantMessageId,
+                  role: 'assistant' as const,
+                  content: assistantContent,
+                  timestamp: new Date()
+                }];
+              });
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Chat error:", error);
+      setIsLoading(false);
+      
+      const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: getRandomResponse(),
+        role: 'assistant',
+        content: "I apologize, but I'm temporarily unable to respond. Please try again in a moment.",
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, aiMessage]);
-      setIsLoading(false);
-    }, 2000);
+      setMessages(prev => [...prev, errorMessage]);
+    }
   };
 
   return (
