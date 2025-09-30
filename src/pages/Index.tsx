@@ -29,20 +29,7 @@ const Index = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  // Track message count to only auto-scroll when new messages are added, not during streaming
-  const prevMessageCountRef = useRef(messages.length);
-
-  useEffect(() => {
-    // Only auto-scroll if a new message was added (not just content updated)
-    if (messages.length > prevMessageCountRef.current) {
-      scrollToBottom();
-      prevMessageCountRef.current = messages.length;
-    }
-  }, [messages]);
+  // Removed auto-scroll to allow users to read messages as they stream in
 
   const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
