@@ -97,6 +97,59 @@ You must follow this exact Markdown structure for all recipes:
 
 *If nutritional data is unavailable for any values, mark as "N/A" and explain the data gap in a footnote below the table.*
 
+**STRUCTURED RECIPE DATA:**
+
+CRITICAL: After completing your markdown recipe, you MUST append the structured recipe data in this exact format:
+
+\`\`\`recipe-json
+{
+  "id": "unique-recipe-id",
+  "title": "Recipe Title",
+  "servings": 4,
+  "difficulty": "easy|medium|hard",
+  "prepTime": "30 minutes",
+  "cookTime": "1 hour",
+  "totalTime": "1 hour 30 minutes",
+  "introduction": "Brief introduction text",
+  "historicalContext": "Historical context if provided",
+  "tips": ["Tip 1", "Tip 2"],
+  "equipment": ["Equipment 1", "Equipment 2"],
+  "advancedPreparation": ["Prep step 1"],
+  "ingredients": [
+    {
+      "name": "Ingredient name",
+      "weightGrams": 100,
+      "weightOz": 3.5,
+      "volume": "1 cup",
+      "notes": "preparation notes"
+    }
+  ],
+  "instructions": [
+    {
+      "stepNumber": 1,
+      "description": "Step description",
+      "timing": "5 minutes",
+      "temperature": "medium heat"
+    }
+  ],
+  "nutrition": {
+    "calories": 450,
+    "totalFat": 20,
+    "saturatedFat": 8,
+    "cholesterol": 100,
+    "sodium": 500,
+    "totalCarbohydrates": 45,
+    "dietaryFiber": 5,
+    "sugars": 8,
+    "protein": 25
+  },
+  "nutritionNotes": "Optional notes about N/A values",
+  "createdAt": "ISO timestamp"
+}
+\`\`\`
+
+This JSON must be valid and complete. All numeric nutrition values should be numbers, or the string "N/A" if unavailable.
+
 **AUTHENTICITY AND HISTORICAL STANDARDS:**
 
 - Provide concise historical backgrounds that respect original methods and regional ingredients
@@ -104,7 +157,7 @@ You must follow this exact Markdown structure for all recipes:
 - Any modern adaptations or fusion suggestions should be clearly marked as separate suggestions, not part of the main traditional recipe
 - Maintain regional fidelity and authentic traditions
 
-For recipe requests, begin with your operational checklist, then proceed with the complete recipe following the exact structure outlined above. For general culinary questions or conversations, provide expert guidance while maintaining your professional, encouraging tone without the formal recipe structure.`
+For recipe requests, begin with your operational checklist, then proceed with the complete recipe following the exact structure outlined above, and ALWAYS end with the structured recipe-json block. For general culinary questions or conversations, provide expert guidance while maintaining your professional, encouraging tone without the formal recipe structure.`
           },
           ...messages,
         ],

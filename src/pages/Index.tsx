@@ -29,62 +29,6 @@ const Index = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Test recipe data for UI development
-  const openTestRecipe = () => {
-    const testRecipe: Recipe = {
-      id: "test-1",
-      title: "Classic Coq au Vin",
-      servings: 4,
-      difficulty: "medium",
-      prepTime: "30 minutes",
-      cookTime: "1 hour 30 minutes",
-      totalTime: "2 hours",
-      introduction: "A timeless French braised chicken dish, where tender pieces are slowly simmered in red wine with aromatic vegetables and herbs, resulting in a deeply flavored, elegant preparation.",
-      historicalContext: "This dish originated in the Burgundy region of France, traditionally prepared by farmers using older roosters that required long, slow cooking to become tender.",
-      tips: [
-        "Use a full-bodied red wine such as Burgundy or Pinot Noir for authentic flavor.",
-        "Allow the chicken to marinate in wine for 2-4 hours before cooking for enhanced depth.",
-        "Cook the bacon until crisp to provide textural contrast to the tender chicken."
-      ],
-      equipment: ["Large Dutch oven or heavy-bottomed pot", "Sharp chef's knife", "Cutting board", "Measuring cups and spoons"],
-      ingredients: [
-        { name: "Chicken thighs, bone-in", weightGrams: 1200, weightOz: 42, notes: "skin-on preferred" },
-        { name: "Thick-cut bacon", weightGrams: 150, weightOz: 5, notes: "diced" },
-        { name: "Pearl onions", weightGrams: 200, weightOz: 7, notes: "peeled" },
-        { name: "Carrots", weightGrams: 150, weightOz: 5, notes: "cut into 2-inch pieces" },
-        { name: "Garlic cloves", weightGrams: 15, notes: "minced" },
-        { name: "Red wine", volume: "750ml", notes: "Burgundy or Pinot Noir" },
-        { name: "Chicken stock", volume: "240ml" },
-        { name: "Tomato paste", volume: "2 tbsp" },
-        { name: "Fresh thyme", volume: "4 sprigs" },
-        { name: "Bay leaves", volume: "2 leaves" },
-        { name: "Button mushrooms", weightGrams: 250, weightOz: 8, notes: "halved" }
-      ],
-      instructions: [
-        { stepNumber: 1, description: "Season chicken pieces generously with salt and pepper. In a large Dutch oven over medium-high heat, cook bacon until crisp. Remove and set aside.", timing: "5 minutes" },
-        { stepNumber: 2, description: "In the bacon fat, brown chicken pieces in batches, skin-side down first, until golden. Remove and set aside.", timing: "8-10 minutes", temperature: "medium-high heat" },
-        { stepNumber: 3, description: "Add pearl onions and carrots to the pot. Cook until lightly caramelized, about 5 minutes. Add garlic and cook for 1 minute until fragrant.", timing: "6 minutes" },
-        { stepNumber: 4, description: "Stir in tomato paste, then pour in red wine and chicken stock. Add thyme and bay leaves. Return chicken and bacon to the pot.", timing: "2 minutes" },
-        { stepNumber: 5, description: "Bring to a simmer, then reduce heat to low. Cover and braise until chicken is tender and cooked through.", timing: "1 hour", temperature: "low simmer" },
-        { stepNumber: 6, description: "In the final 15 minutes, add mushrooms. Remove bay leaves and thyme sprigs before serving. Adjust seasoning as needed.", timing: "15 minutes" }
-      ],
-      nutrition: {
-        calories: 485,
-        totalFat: 24,
-        saturatedFat: 8,
-        cholesterol: 165,
-        sodium: 620,
-        totalCarbohydrates: 12,
-        dietaryFiber: 2,
-        sugars: 4,
-        protein: 42
-      },
-      createdAt: new Date().toISOString()
-    };
-    setCurrentRecipe(testRecipe);
-    setIsRecipeSheetOpen(true);
-  };
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -212,13 +156,6 @@ const Index = () => {
             Culinary Advisor
           </h1>
         </div>
-        {/* Temporary test button for UI development */}
-        <button 
-          onClick={openTestRecipe}
-          className="absolute right-4 px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
-        >
-          View Test Recipe
-        </button>
       </header>
 
       {/* Messages Area */}
@@ -233,6 +170,10 @@ const Index = () => {
               message={message.content}
               role={message.role}
               timestamp={message.timestamp}
+              onViewRecipe={(recipe) => {
+                setCurrentRecipe(recipe);
+                setIsRecipeSheetOpen(true);
+              }}
             />
           ))}
           {isLoading && <LoadingIndicator />}
