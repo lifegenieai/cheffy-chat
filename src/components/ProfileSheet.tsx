@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,8 @@ export function ProfileSheet({
   const { data: existingProfile, isLoading } = useUserProfile();
   const updateProfile = useUpdateProfile();
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
+  const [openAccordions, setOpenAccordions] = useState<string[]>([]);
+  const sheetContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (existingProfile) {
@@ -96,6 +98,10 @@ export function ProfileSheet({
 
   const handleSave = () => {
     updateProfile.mutate(profile);
+    // Collapse all accordions
+    setOpenAccordions([]);
+    // Scroll to top
+    sheetContentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const PillButton = ({
@@ -123,7 +129,7 @@ export function ProfileSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+      <SheetContent ref={sheetContentRef} side="right" className="w-full sm:max-w-2xl overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="text-2xl font-serif">My Profile</SheetTitle>
           <div className="mt-4 space-y-2">
@@ -140,7 +146,7 @@ export function ProfileSheet({
         </SheetHeader>
 
         <div className="mt-8 space-y-6">
-          <Accordion type="multiple" className="space-y-4">
+          <Accordion type="multiple" value={openAccordions} onValueChange={setOpenAccordions} className="space-y-4">
             {/* Servings */}
             <AccordionItem value="servings" className="border rounded-lg px-4">
               <AccordionTrigger className="hover:no-underline">
@@ -163,6 +169,159 @@ export function ProfileSheet({
                   placeholder="Enter number"
                   className="w-32"
                 />
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Favorite Cuisines */}
+            <AccordionItem value="cuisines" className="border rounded-lg px-4">
+              <AccordionTrigger className="hover:no-underline">
+                <div className="flex items-center gap-3">
+                  {profile.cuisines.length > 0 && <Check className="w-5 h-5 text-primary" />}
+                  <span className="font-medium">Favorite Cuisines</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 pb-4">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Italian",
+                    "French",
+                    "Mediterranean",
+                    "Chinese",
+                    "Japanese",
+                    "Thai",
+                    "Indian",
+                    "Mexican",
+                    "American",
+                    "BBQ",
+                    "Middle Eastern",
+                    "North African",
+                  ].map(cuisine => (
+                    <PillButton
+                      key={cuisine}
+                      active={profile.cuisines.includes(cuisine)}
+                      onClick={() => toggleArrayItem("cuisines", cuisine)}
+                    >
+                      {cuisine}
+                    </PillButton>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Flavors Leaned Toward */}
+            <AccordionItem value="flavors" className="border rounded-lg px-4">
+              <AccordionTrigger className="hover:no-underline">
+                <div className="flex items-center gap-3">
+                  {profile.flavors.length > 0 && <Check className="w-5 h-5 text-primary" />}
+                  <span className="font-medium">Flavors Leaned Toward</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 pb-4">
+                <div className="flex flex-wrap gap-2">
+                  {["Spicy & Bold", "Rich & Creamy", "Fresh & Bright", "Smoky & Earthy", "Sweet & Tangy"].map(
+                    flavor => (
+                      <PillButton
+                        key={flavor}
+                        active={profile.flavors.includes(flavor)}
+                        onClick={() => toggleArrayItem("flavors", flavor)}
+                      >
+                        {flavor}
+                      </PillButton>
+                    )
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Go-To Comfort Foods */}
+            <AccordionItem value="comfort-foods" className="border rounded-lg px-4">
+              <AccordionTrigger className="hover:no-underline">
+                <div className="flex items-center gap-3">
+                  {profile.comfort_foods.length > 0 && <Check className="w-5 h-5 text-primary" />}
+                  <span className="font-medium">Go-To Comfort Foods</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 pb-4">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Pasta & Noodles",
+                    "BBQ, Burgers & Roasts",
+                    "Soups & Stews",
+                    "Bread, Pizza & Pastries",
+                    "Chocolate & Sweets",
+                  ].map(food => (
+                    <PillButton
+                      key={food}
+                      active={profile.comfort_foods.includes(food)}
+                      onClick={() => toggleArrayItem("comfort_foods", food)}
+                    >
+                      {food}
+                    </PillButton>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Dislikes / Avoids */}
+            <AccordionItem value="dislikes" className="border rounded-lg px-4">
+              <AccordionTrigger className="hover:no-underline">
+                <div className="flex items-center gap-3">
+                  {profile.dislikes.length > 0 && <Check className="w-5 h-5 text-primary" />}
+                  <span className="font-medium">Dislikes / Avoids</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 pb-4">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Spicy Heat",
+                    "Seafood / Shellfish",
+                    "Strong Flavors",
+                    "Bitter or Earthy",
+                    "Texture Issues",
+                  ].map(dislike => (
+                    <PillButton
+                      key={dislike}
+                      active={profile.dislikes.includes(dislike)}
+                      onClick={() => toggleArrayItem("dislikes", dislike)}
+                    >
+                      {dislike}
+                    </PillButton>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Dietary / Lifestyle Filters */}
+            <AccordionItem value="dietary" className="border rounded-lg px-4">
+              <AccordionTrigger className="hover:no-underline">
+                <div className="flex items-center gap-3">
+                  {profile.dietary_filter && <Check className="w-5 h-5 text-primary" />}
+                  <span className="font-medium">Dietary / Lifestyle Filters</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 pb-4">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "No Restrictions",
+                    "Vegetarian",
+                    "Vegan",
+                    "Health-Conscious",
+                    "Protein-Focused / Low-Carb",
+                  ].map(diet => (
+                    <PillButton
+                      key={diet}
+                      active={profile.dietary_filter === diet}
+                      onClick={() =>
+                        setProfile({
+                          ...profile,
+                          dietary_filter: profile.dietary_filter === diet ? null : diet,
+                        })
+                      }
+                    >
+                      {diet}
+                    </PillButton>
+                  ))}
+                </div>
               </AccordionContent>
             </AccordionItem>
 
@@ -457,159 +616,6 @@ export function ProfileSheet({
                       </PillButton>
                     ))}
                   </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Favorite Cuisines */}
-            <AccordionItem value="cuisines" className="border rounded-lg px-4">
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex items-center gap-3">
-                  {profile.cuisines.length > 0 && <Check className="w-5 h-5 text-primary" />}
-                  <span className="font-medium">Favorite Cuisines</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 pb-4">
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "Italian",
-                    "French",
-                    "Mediterranean",
-                    "Chinese",
-                    "Japanese",
-                    "Thai",
-                    "Indian",
-                    "Mexican",
-                    "American",
-                    "BBQ",
-                    "Middle Eastern",
-                    "North African",
-                  ].map(cuisine => (
-                    <PillButton
-                      key={cuisine}
-                      active={profile.cuisines.includes(cuisine)}
-                      onClick={() => toggleArrayItem("cuisines", cuisine)}
-                    >
-                      {cuisine}
-                    </PillButton>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Flavors Leaned Toward */}
-            <AccordionItem value="flavors" className="border rounded-lg px-4">
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex items-center gap-3">
-                  {profile.flavors.length > 0 && <Check className="w-5 h-5 text-primary" />}
-                  <span className="font-medium">Flavors Leaned Toward</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 pb-4">
-                <div className="flex flex-wrap gap-2">
-                  {["Spicy & Bold", "Rich & Creamy", "Fresh & Bright", "Smoky & Earthy", "Sweet & Tangy"].map(
-                    flavor => (
-                      <PillButton
-                        key={flavor}
-                        active={profile.flavors.includes(flavor)}
-                        onClick={() => toggleArrayItem("flavors", flavor)}
-                      >
-                        {flavor}
-                      </PillButton>
-                    )
-                  )}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Go-To Comfort Foods */}
-            <AccordionItem value="comfort-foods" className="border rounded-lg px-4">
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex items-center gap-3">
-                  {profile.comfort_foods.length > 0 && <Check className="w-5 h-5 text-primary" />}
-                  <span className="font-medium">Go-To Comfort Foods</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 pb-4">
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "Pasta & Noodles",
-                    "BBQ, Burgers & Roasts",
-                    "Soups & Stews",
-                    "Bread, Pizza & Pastries",
-                    "Chocolate & Sweets",
-                  ].map(food => (
-                    <PillButton
-                      key={food}
-                      active={profile.comfort_foods.includes(food)}
-                      onClick={() => toggleArrayItem("comfort_foods", food)}
-                    >
-                      {food}
-                    </PillButton>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Dislikes / Avoids */}
-            <AccordionItem value="dislikes" className="border rounded-lg px-4">
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex items-center gap-3">
-                  {profile.dislikes.length > 0 && <Check className="w-5 h-5 text-primary" />}
-                  <span className="font-medium">Dislikes / Avoids</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 pb-4">
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "Spicy Heat",
-                    "Seafood / Shellfish",
-                    "Strong Flavors",
-                    "Bitter or Earthy",
-                    "Texture Issues",
-                  ].map(dislike => (
-                    <PillButton
-                      key={dislike}
-                      active={profile.dislikes.includes(dislike)}
-                      onClick={() => toggleArrayItem("dislikes", dislike)}
-                    >
-                      {dislike}
-                    </PillButton>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Dietary / Lifestyle Filters */}
-            <AccordionItem value="dietary" className="border rounded-lg px-4">
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex items-center gap-3">
-                  {profile.dietary_filter && <Check className="w-5 h-5 text-primary" />}
-                  <span className="font-medium">Dietary / Lifestyle Filters</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 pb-4">
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "No Restrictions",
-                    "Vegetarian",
-                    "Vegan",
-                    "Health-Conscious",
-                    "Protein-Focused / Low-Carb",
-                  ].map(diet => (
-                    <PillButton
-                      key={diet}
-                      active={profile.dietary_filter === diet}
-                      onClick={() =>
-                        setProfile({
-                          ...profile,
-                          dietary_filter: profile.dietary_filter === diet ? null : diet,
-                        })
-                      }
-                    >
-                      {diet}
-                    </PillButton>
-                  ))}
                 </div>
               </AccordionContent>
             </AccordionItem>
