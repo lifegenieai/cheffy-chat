@@ -5,15 +5,17 @@ import { RecipeIngredients } from "./recipe/RecipeIngredients";
 import { RecipeInstructions } from "./recipe/RecipeInstructions";
 import { RecipeNutrition } from "./recipe/RecipeNutrition";
 import { Button } from "./ui/button";
-import { Bookmark, Edit3 } from "lucide-react";
+import { Bookmark, Edit3, Check, Play } from "lucide-react";
 
 interface RecipeCardProps {
   recipe: Recipe;
   onSave?: () => void;
   onModify?: () => void;
+  isSaved?: boolean;
+  isFromLibrary?: boolean;
 }
 
-export const RecipeCard = ({ recipe, onSave, onModify }: RecipeCardProps) => {
+export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLibrary = false }: RecipeCardProps) => {
   return (
     <div className="max-w-4xl mx-auto">
       <RecipeHeader 
@@ -99,13 +101,32 @@ export const RecipeCard = ({ recipe, onSave, onModify }: RecipeCardProps) => {
       />
       
       <div className="py-6 flex gap-4 flex-wrap">
-        <Button 
-          onClick={onSave}
-          className="flex-1 min-w-[200px] h-12"
-        >
-          <Bookmark className="w-4 h-4 mr-2" />
-          Save to Library
-        </Button>
+        {isFromLibrary ? (
+          <Button 
+            className="flex-1 min-w-[200px] h-12"
+          >
+            <Play className="w-4 h-4 mr-2" />
+            Start Cooking
+          </Button>
+        ) : (
+          <Button 
+            onClick={onSave}
+            disabled={isSaved}
+            className="flex-1 min-w-[200px] h-12"
+          >
+            {isSaved ? (
+              <>
+                <Check className="w-4 h-4 mr-2" />
+                Saved
+              </>
+            ) : (
+              <>
+                <Bookmark className="w-4 h-4 mr-2" />
+                Save to Library
+              </>
+            )}
+          </Button>
+        )}
         <Button 
           onClick={onModify}
           variant="outline"

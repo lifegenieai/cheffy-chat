@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut } from "lucide-react";
+import { LogOut, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { RecipeCard } from "@/components/RecipeCard";
+import { LibrarySheet } from "@/components/LibrarySheet";
 import { Recipe } from "@/types/recipe";
+import { useSaveRecipe } from "@/hooks/useSaveRecipe";
+import { useLibraryRecipes } from "@/hooks/useLibraryRecipes";
 import logoLight from "@/assets/logo-light.png";
 
 interface Message {
@@ -30,15 +33,35 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentRecipe, setCurrentRecipe] = useState<Recipe | null>(null);
   const [isRecipeSheetOpen, setIsRecipeSheetOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isFromLibrary, setIsFromLibrary] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const saveRecipeMutation = useSaveRecipe();
+  const { data: savedRecipes } = useLibraryRecipes();
 
   const handleLogout = async () => {
     await signOut();
     navigate('/');
   };
+
+  const handleSaveRecipe = () => {
+    if (currentRecipe) {
+      saveRecipeMutation.mutate(currentRecipe);
+    }
+  };
+
+  const handleLibraryRecipeSelect = (recipe: Recipe) => {
+    setCurrentRecipe(recipe);
+    setIsFromLibrary(true);
+    setIsRecipeSheetOpen(true);
+  };
+
+  const isRecipeSaved = currentRecipe 
+    ? savedRecipes?.some(saved => saved.recipe_data.id === currentRecipe.id)
+    : false;
 
   // Removed auto-scroll to allow users to read messages as they stream in
 
@@ -168,6 +191,15 @@ const Index = () => {
             </span>
           )}
           <Button
+            onClick={() => setIsLibraryOpen(true)}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <BookOpen className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Library</span>
+          </Button>
+          <Button
             onClick={handleLogout}
             variant="ghost"
             size="sm"
@@ -193,6 +225,7 @@ const Index = () => {
               timestamp={message.timestamp}
               onViewRecipe={(recipe) => {
                 setCurrentRecipe(recipe);
+                setIsFromLibrary(false);
                 setIsRecipeSheetOpen(true);
               }}
             />
@@ -214,12 +247,10 @@ const Index = () => {
           {currentRecipe && (
             <RecipeCard 
               recipe={currentRecipe}
-              onSave={() => {
-                // TODO: Implement save to library
-                console.log('Save recipe:', currentRecipe.id);
-              }}
+              isSaved={isRecipeSaved}
+              isFromLibrary={isFromLibrary}
+              onSave={handleSaveRecipe}
               onModify={() => {
-                // TODO: Implement recipe modification
                 setIsRecipeSheetOpen(false);
                 console.log('Modify recipe:', currentRecipe.id);
               }}
@@ -227,6 +258,13 @@ const Index = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Library Sheet */}
+      <LibrarySheet 
+        open={isLibraryOpen}
+        onOpenChange={setIsLibraryOpen}
+        onRecipeSelect={handleLibraryRecipeSelect}
+      />
     </div>
   );
 };
