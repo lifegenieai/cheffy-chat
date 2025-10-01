@@ -6,34 +6,23 @@ import heroDish from "@/assets/hero-dish.png";
 import cookingProcess from "@/assets/cooking-process.png";
 import kitchenPrep from "@/assets/kitchen-prep.png";
 import culinaryAchievement from "@/assets/culinary-achievement.png";
-
 const LandingPage = () => {
   const navigate = useNavigate();
-
   useEffect(() => {
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
   }, []);
-
   const handleStartCooking = () => {
     navigate('/chat');
   };
-
-  return (
-    <div className="min-h-screen bg-[#F8F7F5]">
+  return <div className="min-h-screen bg-[#F8F7F5]">
       {/* Hero Section */}
       <section className="min-h-screen lg:grid lg:grid-cols-2">
         {/* Video Side */}
         <div className="relative h-[400px] lg:h-screen overflow-hidden bg-[#2C2C2C]">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
             <source src="/hero-video.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
@@ -42,16 +31,14 @@ const LandingPage = () => {
         {/* Content Side */}
         <div className="flex items-center justify-center px-6 py-16 lg:px-16 lg:py-24">
           <div className="max-w-xl">
-            <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">
-              Your Personal Culinary Mentor
-            </h1>
+            <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">CulinaryAdvisor.ai
+
+
+Your Personal Culinary Mentor</h1>
             <p className="font-['Inter'] text-[16px] md:text-[18px] text-[#6B6B6B] leading-relaxed mb-8">
               A Michelin-star chef in your pocket. Learn, cook, and master recipes with AI-powered guidance every step of the way.
             </p>
-            <Button
-              onClick={handleStartCooking}
-              className="h-12 md:h-14 px-8 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined"
-            >
+            <Button onClick={handleStartCooking} className="h-12 md:h-14 px-8 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined">
               Start Cooking
             </Button>
             <p className="font-['Inter'] text-sm text-[#6B6B6B]/70 mt-4">
@@ -193,10 +180,7 @@ const LandingPage = () => {
           <p className="font-['Inter'] text-[16px] md:text-[18px] text-white/90 mb-8 leading-relaxed">
             Start your culinary journey today. No credit card required.
           </p>
-          <Button
-            onClick={handleStartCooking}
-            className="h-14 px-10 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined-md"
-          >
+          <Button onClick={handleStartCooking} className="h-14 px-10 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined-md">
             Start Cooking Now
           </Button>
           <p className="font-['Inter'] text-sm text-white/70 mt-6">
@@ -224,8 +208,6 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default LandingPage;
