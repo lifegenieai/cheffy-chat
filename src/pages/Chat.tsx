@@ -271,7 +271,7 @@ const Index = () => {
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
-          className="fixed bottom-32 right-6 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center animate-bounce hover:animate-none"
+          className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center animate-[pulse_2s_ease-in-out_infinite]"
           aria-label="Scroll to bottom"
         >
           <ChevronDown className="w-5 h-5" />
