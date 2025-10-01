@@ -105,6 +105,7 @@ CRITICAL: After completing your markdown recipe, you MUST append the structured 
 {
   "id": "unique-recipe-id",
   "title": "Recipe Title",
+  "category": "Appetizers|Soups|Salads|Main Dishes|Side Dishes|Desserts|Breads|Pastry",
   "servings": 4,
   "difficulty": "easy|medium|hard",
   "prepTime": "30 minutes",

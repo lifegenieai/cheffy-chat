@@ -5,6 +5,7 @@ import { RecipeIngredients } from "./recipe/RecipeIngredients";
 import { RecipeInstructions } from "./recipe/RecipeInstructions";
 import { RecipeNutrition } from "./recipe/RecipeNutrition";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import { Bookmark, Edit3, Check, Play } from "lucide-react";
 
 interface RecipeCardProps {
@@ -60,6 +61,12 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
 
   return (
     <div className="max-w-4xl mx-auto">
+      <div className="mb-3">
+        <Badge variant="secondary" className="text-xs px-3 py-1">
+          {recipe.category}
+        </Badge>
+      </div>
+      
       <RecipeHeader 
         title={recipe.title}
         difficulty={recipe.difficulty}

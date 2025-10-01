@@ -2,6 +2,7 @@ export interface Recipe {
   // Core identifiers
   id: string;
   title: string;
+  category: 'Appetizers' | 'Soups' | 'Salads' | 'Main Dishes' | 'Side Dishes' | 'Desserts' | 'Breads' | 'Pastry';
   
   // Recipe metadata
   servings: number;
