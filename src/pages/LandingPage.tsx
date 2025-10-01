@@ -71,18 +71,19 @@ const LandingPage = () => {
               </>
             ) : (
               <>
-                {isReturningUser && (
+                {isReturningUser ? (
                   <Link to="/login">
-                    <Button variant="ghost" className="text-white hover:text-white/80">
+                    <Button className="bg-[#8B7355] hover:bg-[#8B7355]/90 text-white">
                       Log In
                     </Button>
                   </Link>
+                ) : (
+                  <Link to="/signup">
+                    <Button className="bg-[#8B7355] hover:bg-[#8B7355]/90 text-white">
+                      Sign Up
+                    </Button>
+                  </Link>
                 )}
-                <Link to="/signup">
-                  <Button className="bg-[#8B7355] hover:bg-[#8B7355]/90 text-white">
-                    Sign Up
-                  </Button>
-                </Link>
               </>
             )}
           </div>
