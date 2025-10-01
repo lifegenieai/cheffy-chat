@@ -1,4 +1,8 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -28,6 +32,13 @@ const Index = () => {
   const [isRecipeSheetOpen, setIsRecipeSheetOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   // Removed auto-scroll to allow users to read messages as they stream in
 
@@ -139,7 +150,7 @@ const Index = () => {
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <header className="flex items-center justify-center px-4 py-6 border-b border-border bg-background shadow-refined">
+      <header className="flex items-center justify-between px-4 py-6 border-b border-border bg-background shadow-refined">
         <div className="flex items-center gap-3">
           <img 
             src={logoLight} 
@@ -149,6 +160,22 @@ const Index = () => {
           <h1 className="text-2xl font-serif font-semibold text-foreground">
             Culinary Advisor
           </h1>
+        </div>
+        <div className="flex items-center gap-4">
+          {user && (
+            <span className="text-sm text-muted-foreground hidden sm:inline">
+              {user.email}
+            </span>
+          )}
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Log Out</span>
+          </Button>
         </div>
       </header>
 

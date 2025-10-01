@@ -1,14 +1,17 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { MessageCircle, Clock, BookOpen, ChefHat, Utensils, Sparkles } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { MessageCircle, Clock, BookOpen, ChefHat, Utensils } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import heroDish from "@/assets/hero-dish.png";
 import cookingProcess from "@/assets/cooking-process.png";
 import kitchenPrep from "@/assets/kitchen-prep.png";
 import culinaryAchievement from "@/assets/culinary-achievement.png";
 import logo from "@/assets/logo.png";
+
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { user, isReturningUser, signOut } = useAuth();
   useEffect(() => {
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap';
@@ -18,7 +21,74 @@ const LandingPage = () => {
   const handleStartCooking = () => {
     navigate('/chat');
   };
+
+  const handleAuthAction = () => {
+    if (user) {
+      navigate('/chat');
+    } else if (isReturningUser) {
+      navigate('/login');
+    } else {
+      navigate('/signup');
+    }
+  };
+
+  const getAuthButtonText = () => {
+    if (user) return 'Continue to Chat';
+    if (isReturningUser) return 'Log In';
+    return 'Sign Up';
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return <div className="min-h-screen bg-[#F8F7F5]">
+      {/* Header with Auth Links */}
+      <header className="absolute top-0 right-0 left-0 z-10 px-6 py-4">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Culinary Advisor" className="w-8 h-8" />
+            <span className="font-['Playfair_Display'] text-lg font-semibold text-white">CulinaryAdvisor.ai</span>
+          </div>
+          <div className="flex items-center gap-4">
+            {user ? (
+              <>
+                <Button
+                  onClick={() => navigate('/chat')}
+                  variant="ghost"
+                  className="text-white hover:text-white/80"
+                >
+                  Chat
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="ghost"
+                  className="text-white hover:text-white/80"
+                >
+                  Log Out
+                </Button>
+              </>
+            ) : (
+              <>
+                {isReturningUser && (
+                  <Link to="/login">
+                    <Button variant="ghost" className="text-white hover:text-white/80">
+                      Log In
+                    </Button>
+                  </Link>
+                )}
+                <Link to="/signup">
+                  <Button className="bg-[#8B7355] hover:bg-[#8B7355]/90 text-white">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="min-h-screen lg:grid lg:grid-cols-2">
         {/* Video Side */}
@@ -41,12 +111,14 @@ const LandingPage = () => {
             <p className="font-['Inter'] text-[16px] md:text-[18px] text-[#6B6B6B] leading-relaxed mb-8">
               A Michelin-star chef in your pocket. Learn, cook, and master recipes with AI-powered guidance every step of the way.
             </p>
-            <Button onClick={handleStartCooking} className="h-12 md:h-14 px-8 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined mx-auto">
-              Start Cooking
+            <Button onClick={handleAuthAction} className="h-12 md:h-14 px-8 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined mx-auto">
+              {getAuthButtonText()}
             </Button>
-            <p className="font-['Inter'] text-sm text-[#6B6B6B]/70 mt-4">
-              No account needed to start
-            </p>
+            {!user && (
+              <p className="font-['Inter'] text-sm text-[#6B6B6B]/70 mt-4">
+                {isReturningUser ? 'Welcome back' : 'Create a free account to get started'}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -183,8 +255,8 @@ const LandingPage = () => {
           <p className="font-['Inter'] text-[16px] md:text-[18px] text-white/90 mb-8 leading-relaxed">
             Start your culinary journey today. No credit card required.
           </p>
-          <Button onClick={handleStartCooking} className="h-14 px-10 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined-md">
-            Start Cooking Now
+          <Button onClick={handleAuthAction} className="h-14 px-10 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined-md">
+            {getAuthButtonText()}
           </Button>
           <p className="font-['Inter'] text-sm text-white/70 mt-6">
             Free to try • Save recipes with an account • Cancel anytime
@@ -196,6 +268,18 @@ const LandingPage = () => {
       <footer className="py-8 px-6 border-t border-[#E8E6E3]">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-center items-center gap-6 text-center">
+            {!user && (
+              <>
+                <Link to="/signup" className="font-['Inter'] text-sm text-[#6B6B6B] hover:text-[#8B7355] transition-colors duration-200">
+                  Sign Up
+                </Link>
+                {isReturningUser && (
+                  <Link to="/login" className="font-['Inter'] text-sm text-[#6B6B6B] hover:text-[#8B7355] transition-colors duration-200">
+                    Log In
+                  </Link>
+                )}
+              </>
+            )}
             <a href="#" className="font-['Inter'] text-sm text-[#6B6B6B] hover:text-[#8B7355] transition-colors duration-200">
               About
             </a>
