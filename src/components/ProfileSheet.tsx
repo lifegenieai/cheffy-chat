@@ -131,7 +131,25 @@ export function ProfileSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent ref={sheetContentRef} side="right" className="w-full sm:max-w-2xl overflow-y-auto">
         <SheetHeader>
-          <SheetTitle className="text-2xl font-serif">My Profile</SheetTitle>
+          <div className="flex items-center justify-between">
+            <SheetTitle className="text-2xl font-serif">My Profile</SheetTitle>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onOpenResetPassword}
+                className="p-2 rounded-lg hover:bg-muted transition-colors duration-200"
+                title="Reset Password"
+              >
+                <Key className="w-5 h-5 text-muted-foreground" />
+              </button>
+              <button
+                onClick={onOpenSettings}
+                className="p-2 rounded-lg hover:bg-muted transition-colors duration-200"
+                title="Settings"
+              >
+                <Settings className="w-5 h-5 text-muted-foreground" />
+              </button>
+            </div>
+          </div>
           <div className="mt-4 space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Profile {completion}% Complete</span>
@@ -142,29 +160,6 @@ export function ProfileSheet({
               )}
             </div>
             <Progress value={completion} className="h-2" />
-          </div>
-          
-          {/* Quick Settings Links */}
-          <div className="mt-4 space-y-2">
-            <button
-              onClick={onOpenResetPassword}
-              className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-muted transition-colors duration-200"
-            >
-              <div className="flex items-center gap-3">
-                <Key className="w-5 h-5 text-muted-foreground" />
-                <span className="text-foreground font-medium">Reset Password</span>
-              </div>
-            </button>
-
-            <button
-              onClick={onOpenSettings}
-              className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-muted transition-colors duration-200"
-            >
-              <div className="flex items-center gap-3">
-                <Settings className="w-5 h-5 text-muted-foreground" />
-                <span className="text-foreground font-medium">Settings</span>
-              </div>
-            </button>
           </div>
         </SheetHeader>
 
