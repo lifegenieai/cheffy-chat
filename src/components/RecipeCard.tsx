@@ -13,9 +13,48 @@ interface RecipeCardProps {
   onModify?: () => void;
   isSaved?: boolean;
   isFromLibrary?: boolean;
+  onOpenLibrary?: () => void;
 }
 
-export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLibrary = false }: RecipeCardProps) => {
+export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLibrary = false, onOpenLibrary }: RecipeCardProps) => {
+  const renderActionButtons = () => (
+    <div className="flex gap-4 flex-wrap">
+      {isFromLibrary ? (
+        <Button 
+          className="flex-1 min-w-[200px] h-12"
+        >
+          <Play className="w-4 h-4 mr-2" />
+          Start Cooking
+        </Button>
+      ) : (
+        <Button 
+          onClick={isSaved ? onOpenLibrary : onSave}
+          className="flex-1 min-w-[200px] h-12"
+        >
+          {isSaved ? (
+            <>
+              <Bookmark className="w-4 h-4 mr-2" />
+              View in Library
+            </>
+          ) : (
+            <>
+              <Bookmark className="w-4 h-4 mr-2" />
+              Save to Library
+            </>
+          )}
+        </Button>
+      )}
+      <Button 
+        onClick={onModify}
+        variant="outline"
+        className="flex-1 min-w-[200px] h-12"
+      >
+        <Edit3 className="w-4 h-4 mr-2" />
+        Modify Recipe
+      </Button>
+    </div>
+  );
+
   return (
     <div className="max-w-4xl mx-auto">
       <RecipeHeader 
@@ -23,6 +62,10 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
         difficulty={recipe.difficulty}
         servings={recipe.servings}
       />
+      
+      <div className="py-6 border-b border-border">
+        {renderActionButtons()}
+      </div>
       
       <RecipeMetadata 
         prepTime={recipe.prepTime}
@@ -100,41 +143,8 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
         nutritionNotes={recipe.nutritionNotes}
       />
       
-      <div className="py-6 flex gap-4 flex-wrap">
-        {isFromLibrary ? (
-          <Button 
-            className="flex-1 min-w-[200px] h-12"
-          >
-            <Play className="w-4 h-4 mr-2" />
-            Start Cooking
-          </Button>
-        ) : (
-          <Button 
-            onClick={onSave}
-            disabled={isSaved}
-            className="flex-1 min-w-[200px] h-12"
-          >
-            {isSaved ? (
-              <>
-                <Check className="w-4 h-4 mr-2" />
-                Saved
-              </>
-            ) : (
-              <>
-                <Bookmark className="w-4 h-4 mr-2" />
-                Save to Library
-              </>
-            )}
-          </Button>
-        )}
-        <Button 
-          onClick={onModify}
-          variant="outline"
-          className="flex-1 min-w-[200px] h-12"
-        >
-          <Edit3 className="w-4 h-4 mr-2" />
-          Modify Recipe
-        </Button>
+      <div className="py-6">
+        {renderActionButtons()}
       </div>
     </div>
   );

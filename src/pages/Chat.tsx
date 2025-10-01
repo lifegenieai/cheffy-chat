@@ -250,6 +250,7 @@ const Index = () => {
               isSaved={isRecipeSaved}
               isFromLibrary={isFromLibrary}
               onSave={handleSaveRecipe}
+              onOpenLibrary={() => setIsLibraryOpen(true)}
               onModify={() => {
                 setIsRecipeSheetOpen(false);
                 console.log('Modify recipe:', currentRecipe.id);
