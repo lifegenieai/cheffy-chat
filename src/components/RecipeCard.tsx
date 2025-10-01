@@ -61,15 +61,10 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-3">
-        <Badge variant="secondary" className="text-xs px-3 py-1">
-          {recipe.category}
-        </Badge>
-      </div>
-      
       <RecipeHeader 
         title={recipe.title}
         difficulty={recipe.difficulty}
+        category={recipe.category}
         servings={recipe.servings}
         actionButtons={renderActionButtons()}
       />

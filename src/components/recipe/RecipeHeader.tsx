@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 interface RecipeHeaderProps {
   title: string;
   difficulty: 'easy' | 'medium' | 'hard';
+  category: string;
   servings: number;
   actionButtons?: ReactNode;
 }
@@ -15,7 +16,7 @@ const difficultyConfig = {
   hard: { label: 'Advanced', className: 'bg-red-100 text-red-800 border-red-200' }
 };
 
-export const RecipeHeader = ({ title, difficulty, servings, actionButtons }: RecipeHeaderProps) => {
+export const RecipeHeader = ({ title, difficulty, category, servings, actionButtons }: RecipeHeaderProps) => {
   const config = difficultyConfig[difficulty];
   
   return (
@@ -26,6 +27,9 @@ export const RecipeHeader = ({ title, difficulty, servings, actionButtons }: Rec
       <div className="flex items-center gap-3 flex-wrap">
         <Badge variant="outline" className={cn("px-3 py-1", config.className)}>
           {config.label}
+        </Badge>
+        <Badge variant="secondary" className="px-3 py-1 text-xs">
+          {category}
         </Badge>
         <span className="text-base text-muted-foreground">
           Serves {servings}
