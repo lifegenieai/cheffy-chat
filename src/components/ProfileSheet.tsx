@@ -143,6 +143,29 @@ export function ProfileSheet({
             </div>
             <Progress value={completion} className="h-2" />
           </div>
+          
+          {/* Quick Settings Links */}
+          <div className="mt-4 space-y-2">
+            <button
+              onClick={onOpenResetPassword}
+              className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-muted transition-colors duration-200"
+            >
+              <div className="flex items-center gap-3">
+                <Key className="w-5 h-5 text-muted-foreground" />
+                <span className="text-foreground font-medium">Reset Password</span>
+              </div>
+            </button>
+
+            <button
+              onClick={onOpenSettings}
+              className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-muted transition-colors duration-200"
+            >
+              <div className="flex items-center gap-3">
+                <Settings className="w-5 h-5 text-muted-foreground" />
+                <span className="text-foreground font-medium">Settings</span>
+              </div>
+            </button>
+          </div>
         </SheetHeader>
 
         <div className="mt-8 space-y-6">
@@ -620,31 +643,6 @@ export function ProfileSheet({
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-
-          <Separator className="my-6" />
-
-          {/* Quick Settings Links */}
-          <div className="space-y-2">
-            <button
-              onClick={onOpenResetPassword}
-              className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-muted transition-colors duration-200"
-            >
-              <div className="flex items-center gap-3">
-                <Key className="w-5 h-5 text-muted-foreground" />
-                <span className="text-foreground font-medium">Reset Password</span>
-              </div>
-            </button>
-
-            <button
-              onClick={onOpenSettings}
-              className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-muted transition-colors duration-200"
-            >
-              <div className="flex items-center gap-3">
-                <Settings className="w-5 h-5 text-muted-foreground" />
-                <span className="text-foreground font-medium">Settings</span>
-              </div>
-            </button>
-          </div>
         </div>
 
         {/* Save Button */}
