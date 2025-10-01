@@ -6,7 +6,7 @@ import heroDish from "@/assets/hero-dish.png";
 import cookingProcess from "@/assets/cooking-process.png";
 import kitchenPrep from "@/assets/kitchen-prep.png";
 import culinaryAchievement from "@/assets/culinary-achievement.png";
-import logoMain from "@/assets/logo-main.png";
+import logoCream from "@/assets/logo-cream.png";
 const LandingPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -32,7 +32,7 @@ const LandingPage = () => {
         {/* Content Side */}
         <div className="flex items-center justify-center px-6 py-16 lg:px-16 lg:py-24">
           <div className="max-w-xl text-center">
-            <img src={logoMain} alt="Culinary Advisor" className="w-24 h-24 mx-auto mb-6" />
+            <img src={logoCream} alt="Culinary Advisor" className="w-24 h-24 mx-auto mb-6" />
             <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">
               CulinaryAdvisor.ai
               <br />
