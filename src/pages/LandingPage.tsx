@@ -6,6 +6,7 @@ import heroDish from "@/assets/hero-dish.png";
 import cookingProcess from "@/assets/cooking-process.png";
 import kitchenPrep from "@/assets/kitchen-prep.png";
 import culinaryAchievement from "@/assets/culinary-achievement.png";
+import logoLight from "@/assets/logo-light.png";
 const LandingPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -30,15 +31,17 @@ const LandingPage = () => {
 
         {/* Content Side */}
         <div className="flex items-center justify-center px-6 py-16 lg:px-16 lg:py-24">
-          <div className="max-w-xl">
-            <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">CulinaryAdvisor.ai
-
-
-Your Personal Culinary Mentor</h1>
+          <div className="max-w-xl text-center">
+            <img src={logoLight} alt="Culinary Advisor" className="w-24 h-24 mx-auto mb-6" />
+            <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">
+              CulinaryAdvisor.ai
+              <br />
+              <span className="block mt-2">Your Personal Culinary Mentor</span>
+            </h1>
             <p className="font-['Inter'] text-[16px] md:text-[18px] text-[#6B6B6B] leading-relaxed mb-8">
               A Michelin-star chef in your pocket. Learn, cook, and master recipes with AI-powered guidance every step of the way.
             </p>
-            <Button onClick={handleStartCooking} className="h-12 md:h-14 px-8 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined">
+            <Button onClick={handleStartCooking} className="h-12 md:h-14 px-8 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined mx-auto">
               Start Cooking
             </Button>
             <p className="font-['Inter'] text-sm text-[#6B6B6B]/70 mt-4">
