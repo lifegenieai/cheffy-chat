@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, BookOpen } from "lucide-react";
+import { LogOut, BookOpen, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
@@ -35,6 +35,7 @@ const Index = () => {
   const [isRecipeSheetOpen, setIsRecipeSheetOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isFromLibrary, setIsFromLibrary] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { user, signOut } = useAuth();
@@ -63,7 +64,38 @@ const Index = () => {
     ? savedRecipes?.some(saved => saved.recipe_data.id === currentRecipe.id)
     : false;
 
-  // Removed auto-scroll to allow users to read messages as they stream in
+  // Check scroll position to show/hide scroll-to-bottom button
+  const checkScrollPosition = () => {
+    const element = scrollAreaRef.current;
+    if (!element) return;
+    
+    const isNearBottom = 
+      element.scrollHeight - element.scrollTop - element.clientHeight < 100;
+    setShowScrollButton(!isNearBottom);
+  };
+
+  // Smooth scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Listen to scroll events
+  useEffect(() => {
+    const element = scrollAreaRef.current;
+    if (!element) return;
+
+    element.addEventListener('scroll', checkScrollPosition);
+    checkScrollPosition(); // Check initial state
+
+    return () => {
+      element.removeEventListener('scroll', checkScrollPosition);
+    };
+  }, []);
+
+  // Check scroll position when messages change
+  useEffect(() => {
+    checkScrollPosition();
+  }, [messages]);
 
   const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
@@ -234,6 +266,17 @@ const Index = () => {
           <div ref={messagesEndRef} />
         </div>
       </div>
+
+      {/* Scroll to Bottom Button */}
+      {showScrollButton && (
+        <button
+          onClick={scrollToBottom}
+          className="fixed bottom-32 right-6 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center animate-bounce hover:animate-none"
+          aria-label="Scroll to bottom"
+        >
+          <ChevronDown className="w-5 h-5" />
+        </button>
+      )}
 
       {/* Input Area */}
       <ChatInput 
