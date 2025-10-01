@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, BookOpen, ChevronDown } from "lucide-react";
+import { LogOut, BookOpen, ChevronDown, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
@@ -9,6 +9,9 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { RecipeCard } from "@/components/RecipeCard";
 import { LibrarySheet } from "@/components/LibrarySheet";
+import { ProfileSheet } from "@/components/ProfileSheet";
+import { ResetPasswordSheet } from "@/components/ResetPasswordSheet";
+import { SettingsSheet } from "@/components/SettingsSheet";
 import { Recipe } from "@/types/recipe";
 import { useSaveRecipe } from "@/hooks/useSaveRecipe";
 import { useLibraryRecipes } from "@/hooks/useLibraryRecipes";
@@ -36,6 +39,9 @@ const Index = () => {
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isFromLibrary, setIsFromLibrary] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [showProfileSheet, setShowProfileSheet] = useState(false);
+  const [showResetPasswordSheet, setShowResetPasswordSheet] = useState(false);
+  const [showSettingsSheet, setShowSettingsSheet] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { user, signOut } = useAuth();
@@ -217,11 +223,15 @@ const Index = () => {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          {user && (
-            <span className="text-sm text-muted-foreground hidden sm:inline">
-              {user.email}
-            </span>
-          )}
+          <Button
+            onClick={() => setShowProfileSheet(true)}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <User className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Profile</span>
+          </Button>
           <Button
             onClick={() => setIsLibraryOpen(true)}
             variant="ghost"
@@ -230,6 +240,15 @@ const Index = () => {
           >
             <BookOpen className="w-4 h-4 mr-2" />
             <span className="hidden sm:inline">Library</span>
+          </Button>
+          <Button
+            onClick={() => setShowSettingsSheet(true)}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Settings</span>
           </Button>
           <Button
             onClick={handleLogout}
@@ -271,7 +290,10 @@ const Index = () => {
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
-          className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center animate-[pulse_2s_ease-in-out_infinite]"
+          className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center animate-[pulse_2s_ease-in-out_infinite] hover:animate-none"
+          style={{
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }}
           aria-label="Scroll to bottom"
         >
           <ChevronDown className="w-5 h-5" />
@@ -308,6 +330,32 @@ const Index = () => {
         open={isLibraryOpen}
         onOpenChange={setIsLibraryOpen}
         onRecipeSelect={handleLibraryRecipeSelect}
+      />
+
+      {/* Profile Sheet */}
+      <ProfileSheet
+        open={showProfileSheet}
+        onOpenChange={setShowProfileSheet}
+        onOpenResetPassword={() => {
+          setShowProfileSheet(false);
+          setShowResetPasswordSheet(true);
+        }}
+        onOpenSettings={() => {
+          setShowProfileSheet(false);
+          setShowSettingsSheet(true);
+        }}
+      />
+
+      {/* Reset Password Sheet */}
+      <ResetPasswordSheet
+        open={showResetPasswordSheet}
+        onOpenChange={setShowResetPasswordSheet}
+      />
+
+      {/* Settings Sheet */}
+      <SettingsSheet
+        open={showSettingsSheet}
+        onOpenChange={setShowSettingsSheet}
       />
     </div>
   );
