@@ -68,6 +68,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profiles: {
+        Row: {
+          comfort_foods: string[] | null
+          created_at: string | null
+          cuisines: string[] | null
+          dietary_filter: string | null
+          dislikes: string[] | null
+          equipment: Json | null
+          flavors: string[] | null
+          id: string
+          servings: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          comfort_foods?: string[] | null
+          created_at?: string | null
+          cuisines?: string[] | null
+          dietary_filter?: string | null
+          dislikes?: string[] | null
+          equipment?: Json | null
+          flavors?: string[] | null
+          id?: string
+          servings?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          comfort_foods?: string[] | null
+          created_at?: string | null
+          cuisines?: string[] | null
+          dietary_filter?: string | null
+          dislikes?: string[] | null
+          equipment?: Json | null
+          flavors?: string[] | null
+          id?: string
+          servings?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
