@@ -18,27 +18,29 @@ interface RecipeCardProps {
 
 export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLibrary = false, onOpenLibrary }: RecipeCardProps) => {
   const renderActionButtons = () => (
-    <div className="flex gap-4 flex-wrap">
+    <>
       {isFromLibrary ? (
         <Button 
-          className="flex-1 min-w-[200px] h-12"
+          size="sm"
+          className="h-8 px-3 text-xs"
         >
-          <Play className="w-4 h-4 mr-2" />
+          <Play className="w-3 h-3 mr-1" />
           Start Cooking
         </Button>
       ) : (
         <Button 
           onClick={isSaved ? onOpenLibrary : onSave}
-          className="flex-1 min-w-[200px] h-12"
+          size="sm"
+          className="h-8 px-3 text-xs"
         >
           {isSaved ? (
             <>
-              <Bookmark className="w-4 h-4 mr-2" />
+              <Bookmark className="w-3 h-3 mr-1" />
               View in Library
             </>
           ) : (
             <>
-              <Bookmark className="w-4 h-4 mr-2" />
+              <Bookmark className="w-3 h-3 mr-1" />
               Save to Library
             </>
           )}
@@ -47,12 +49,13 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
       <Button 
         onClick={onModify}
         variant="outline"
-        className="flex-1 min-w-[200px] h-12"
+        size="sm"
+        className="h-8 px-3 text-xs"
       >
-        <Edit3 className="w-4 h-4 mr-2" />
+        <Edit3 className="w-3 h-3 mr-1" />
         Modify Recipe
       </Button>
-    </div>
+    </>
   );
 
   return (
@@ -61,11 +64,8 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
         title={recipe.title}
         difficulty={recipe.difficulty}
         servings={recipe.servings}
+        actionButtons={renderActionButtons()}
       />
-      
-      <div className="py-6 border-b border-border">
-        {renderActionButtons()}
-      </div>
       
       <RecipeMetadata 
         prepTime={recipe.prepTime}
@@ -143,9 +143,6 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
         nutritionNotes={recipe.nutritionNotes}
       />
       
-      <div className="py-6">
-        {renderActionButtons()}
-      </div>
     </div>
   );
 };

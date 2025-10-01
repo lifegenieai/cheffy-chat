@@ -1,10 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
 interface RecipeHeaderProps {
   title: string;
   difficulty: 'easy' | 'medium' | 'hard';
   servings: number;
+  actionButtons?: ReactNode;
 }
 
 const difficultyConfig = {
@@ -13,7 +15,7 @@ const difficultyConfig = {
   hard: { label: 'Advanced', className: 'bg-red-100 text-red-800 border-red-200' }
 };
 
-export const RecipeHeader = ({ title, difficulty, servings }: RecipeHeaderProps) => {
+export const RecipeHeader = ({ title, difficulty, servings, actionButtons }: RecipeHeaderProps) => {
   const config = difficultyConfig[difficulty];
   
   return (
@@ -28,6 +30,11 @@ export const RecipeHeader = ({ title, difficulty, servings }: RecipeHeaderProps)
         <span className="text-base text-muted-foreground">
           Serves {servings}
         </span>
+        {actionButtons && (
+          <div className="flex items-center gap-2 ml-auto">
+            {actionButtons}
+          </div>
+        )}
       </div>
     </div>
   );
