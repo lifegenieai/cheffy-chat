@@ -53,6 +53,17 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
         isUser ? "items-end" : "items-start"
       )}
     >
+      {recipe && onViewRecipe && (
+        <Button
+          onClick={() => onViewRecipe(recipe)}
+          className="mb-3"
+          size="sm"
+        >
+          <ChefHat className="w-4 h-4 mr-2" />
+          View Recipe
+        </Button>
+      )}
+      
       <div
         className={cn(
           "max-w-[85%] rounded-xl px-5 py-4 shadow-refined transition-standard",
@@ -77,7 +88,7 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
       {recipe && onViewRecipe && (
         <Button
           onClick={() => onViewRecipe(recipe)}
-          className="mt-3 ml-auto"
+          className="mt-3"
           size="sm"
         >
           <ChefHat className="w-4 h-4 mr-2" />
