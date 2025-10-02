@@ -46,6 +46,20 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
   const { recipe, cleanText } = extractRecipe(message);
   const displayMessage = cleanText || message;
 
+  // Trigger image generation in background when recipe is extracted
+  if (recipe && recipe.title && onViewRecipe) {
+    import("@/lib/recipeImageService").then(({ generateRecipeImage }) => {
+      generateRecipeImage(recipe.title, recipe.id)
+        .then(result => {
+          if (result.imageUrl && recipe) {
+            // Update recipe with image URL
+            recipe.imageUrl = result.imageUrl;
+          }
+        })
+        .catch(err => console.error("Failed to generate recipe image:", err));
+    });
+  }
+
   return (
     <div 
       className={cn(

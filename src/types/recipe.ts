@@ -55,4 +55,7 @@ export interface Recipe {
   savedAt?: string;
   createdAt: string;
   modifiedAt?: string;
+  
+  // Image metadata
+  imageUrl?: string;
 }

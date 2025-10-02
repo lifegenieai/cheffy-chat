@@ -61,6 +61,20 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
 
   return (
     <div className="max-w-4xl mx-auto">
+      {recipe.imageUrl && (
+        <div className="mb-6 -mx-8 -mt-8">
+          <img 
+            src={recipe.imageUrl} 
+            alt={recipe.title}
+            className="w-full h-[300px] sm:h-[400px] object-cover rounded-t-lg"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+      
       <RecipeHeader 
         title={recipe.title}
         difficulty={recipe.difficulty}

@@ -41,11 +41,36 @@ export type Database = {
         }
         Relationships: []
       }
+      recipe_images: {
+        Row: {
+          cost: number | null
+          created_at: string | null
+          dish_name: string
+          id: string
+          image_url: string
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string | null
+          dish_name: string
+          id?: string
+          image_url: string
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string | null
+          dish_name?: string
+          id?: string
+          image_url?: string
+        }
+        Relationships: []
+      }
       saved_recipes: {
         Row: {
           category: string | null
           created_at: string
           id: string
+          image_url: string | null
           recipe_data: Json
           updated_at: string
           user_id: string
@@ -54,6 +79,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           id?: string
+          image_url?: string | null
           recipe_data: Json
           updated_at?: string
           user_id: string
@@ -62,6 +88,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           id?: string
+          image_url?: string | null
           recipe_data?: Json
           updated_at?: string
           user_id?: string
