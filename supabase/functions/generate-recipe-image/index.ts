@@ -63,16 +63,7 @@ serve(async (req) => {
       attempt++;
       try {
         console.log(`Image generation attempt ${attempt} for: ${dishName}`);
-        const result = await model.generateContent({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 1.0,
-            topP: 0.95,
-            topK: 40,
-            maxOutputTokens: 8192,
-            responseMimeType: "image/png",
-          },
-        });
+        const result = await model.generateContent(prompt);
         const response = result.response;
 
         // Extract base64 image from response
