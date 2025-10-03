@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "./ui/button";
 import { ChefHat } from "lucide-react";
 import { Recipe } from "@/types/recipe";
+import { generateRecipeImage } from "@/lib/recipeImageService";
 
 interface ChatBubbleProps {
   message: string;
@@ -45,20 +47,58 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
 
   const { recipe, cleanText } = extractRecipe(message);
   const displayMessage = cleanText || message;
+  const [recipeImageUrl, setRecipeImageUrl] = useState<string | undefined>(
+    () => recipe?.imageUrl
+  );
 
-  // Trigger image generation in background when recipe is extracted
-  if (recipe && recipe.title && onViewRecipe) {
-    import("@/lib/recipeImageService").then(({ generateRecipeImage }) => {
-      generateRecipeImage(recipe.title, recipe.id)
-        .then(result => {
-          if (result.imageUrl && recipe) {
-            // Update recipe with image URL
-            recipe.imageUrl = result.imageUrl;
-          }
-        })
-        .catch(err => console.error("Failed to generate recipe image:", err));
-    });
-  }
+  const hasRecipe = Boolean(recipe);
+  const recipeId = recipe?.id;
+  const recipeImage = recipe?.imageUrl;
+
+  useEffect(() => {
+    if (!hasRecipe) {
+      setRecipeImageUrl(undefined);
+      return;
+    }
+
+    setRecipeImageUrl(recipeImage);
+  }, [hasRecipe, recipeId, recipeImage]);
+
+  useEffect(() => {
+    if (!recipe?.title) {
+      return;
+    }
+
+    if (recipe.imageUrl || recipeImageUrl) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const fetchRecipeImage = async () => {
+      try {
+        const result = await generateRecipeImage(recipe.title, recipe.id);
+        if (!isCancelled && result.imageUrl) {
+          setRecipeImageUrl(result.imageUrl);
+        }
+      } catch (err) {
+        console.error("Failed to generate recipe image:", err);
+      }
+    };
+
+    fetchRecipeImage();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [recipe?.id, recipe?.title, recipe?.imageUrl, recipeImageUrl]);
+
+  const recipeForView = recipe
+    ? {
+        ...recipe,
+        imageUrl: recipeImageUrl ?? recipe.imageUrl,
+      }
+    : null;
 
   return (
     <div 
@@ -67,9 +107,9 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
         isUser ? "items-end" : "items-start"
       )}
     >
-      {recipe && onViewRecipe && (
+      {recipeForView && onViewRecipe && (
         <Button
-          onClick={() => onViewRecipe(recipe)}
+          onClick={() => onViewRecipe(recipeForView)}
           className="mb-3"
           size="sm"
         >
@@ -99,9 +139,9 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
         )}
       </div>
       
-      {recipe && onViewRecipe && (
+      {recipeForView && onViewRecipe && (
         <Button
-          onClick={() => onViewRecipe(recipe)}
+          onClick={() => onViewRecipe(recipeForView)}
           className="mt-3"
           size="sm"
         >
