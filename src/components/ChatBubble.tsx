@@ -120,18 +120,18 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
       
       <div
         className={cn(
-          "max-w-[85%] rounded-xl px-5 py-4 shadow-refined transition-standard",
-          isUser 
-            ? "bg-primary text-primary-foreground" 
+          "max-w-full rounded-2xl px-6 py-5 shadow-refined transition-standard md:max-w-[80%]",
+          isUser
+            ? "bg-primary text-primary-foreground"
             : "bg-secondary text-secondary-foreground"
         )}
       >
         {isUser ? (
-          <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
+          <p className="text-base leading-relaxed whitespace-pre-wrap break-words sm:text-lg">
             {displayMessage}
           </p>
         ) : (
-          <div className="culinary-markdown">
+          <div className="culinary-markdown text-[1.05rem] leading-[1.7] tracking-[0.01em]">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {displayMessage}
             </ReactMarkdown>
@@ -150,7 +150,7 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
         </Button>
       )}
       
-      <span className="text-xs text-muted-foreground mt-1.5 px-1 opacity-60">
+      <span className="mt-2 px-1 text-xs font-light text-muted-foreground/80">
         {formatTime(timestamp)}
       </span>
     </div>
