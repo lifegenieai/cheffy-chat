@@ -140,6 +140,9 @@ const Index = () => {
       let streamDone = false;
       let assistantContent = "";
       let assistantMessageId = (Date.now() + 1).toString();
+      let tokenCounter = 0;
+      
+      console.log('[Chat] Starting stream processing...');
 
       while (!streamDone) {
         const { done, value } = await reader.read();
@@ -168,6 +171,28 @@ const Index = () => {
             
             if (content) {
               assistantContent += content;
+              tokenCounter++;
+              
+              // Debug logging for tokens
+              if (tokenCounter === 1) {
+                console.log('[Chat] First token received:', content.substring(0, 50));
+              }
+              
+              // Periodic status logging every 10 tokens
+              if (tokenCounter % 10 === 0) {
+                console.log('[Chat] Stream status:', {
+                  tokens: tokenCounter,
+                  totalLength: assistantContent.length,
+                  lastChars: assistantContent.slice(-100),
+                  hasRecipeBlockStart: assistantContent.includes('```recipe-json'),
+                  hasRecipeBlockEnd: assistantContent.includes('```recipe-json') && /```recipe-json[\s\S]*?```/.test(assistantContent)
+                });
+              }
+              
+              // Detect recipe block appearance
+              if (content.includes('```recipe-json') || (assistantContent.includes('```recipe-json') && tokenCounter % 5 === 0)) {
+                console.log('[Chat] Recipe block detected at token', tokenCounter);
+              }
               
               setMessages(prev => {
                 const lastMsg = prev[prev.length - 1];
@@ -192,6 +217,15 @@ const Index = () => {
           }
         }
       }
+
+      // Final stream completion logging
+      console.log('[Chat] Stream complete:', {
+        totalTokens: tokenCounter,
+        totalLength: assistantContent.length,
+        hasRecipeBlock: assistantContent.includes('```recipe-json'),
+        recipeBlockComplete: /```recipe-json[\s\S]*?```/.test(assistantContent),
+        preview: assistantContent.substring(0, 200) + '...'
+      });
 
       setIsLoading(false);
     } catch (error) {

@@ -24,20 +24,37 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
   };
 
   // Extract recipe JSON if present (wrapped in ```recipe-json ... ```)
-  const extractRecipe = (text: string): { recipe: Recipe | null; cleanText: string } => {
+  const extractRecipe = (text: string): { recipe: Recipe | null; cleanText: string; parseStatus: string } => {
     console.log('[ChatBubble] Extracting recipe from message, length:', text.length);
     
-    // Try to find complete recipe-json block first
-    const recipeMatch = text.match(/```recipe-json\s*\n([\s\S]*?)\n```/);
+    // Try multiple regex patterns for resilience
+    const patterns = [
+      /```recipe-json\s*\n([\s\S]*?)\n```/,  // Standard format
+      /```recipe-json\s*([\s\S]*?)```/,       // No newlines
+      /```recipe-json([\s\S]*?)```/,          // Minimal whitespace
+    ];
     
     let recipe: Recipe | null = null;
+    let parseStatus = 'no-recipe-block';
+    let recipeMatch = null;
+    
+    for (const pattern of patterns) {
+      recipeMatch = text.match(pattern);
+      if (recipeMatch) {
+        parseStatus = 'recipe-block-found';
+        break;
+      }
+    }
+    
     if (recipeMatch) {
       const jsonText = recipeMatch[1].trim();
-      console.log('[ChatBubble] Found recipe-json block, attempting to parse...');
+      console.log('[ChatBubble] Found recipe-json block, length:', jsonText.length);
+      console.log('[ChatBubble] JSON preview:', jsonText.substring(0, 200));
       
       try {
         recipe = JSON.parse(jsonText) as Recipe;
         console.log('[ChatBubble] Successfully parsed recipe:', recipe.title);
+        parseStatus = 'success';
         
         // Validate required fields and provide defaults
         if (!recipe.id) recipe.id = `recipe-${Date.now()}`;
@@ -66,12 +83,26 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
           };
         }
       } catch (e) {
-        console.error('[ChatBubble] Failed to parse recipe JSON:', e);
-        console.error('[ChatBubble] JSON text was:', jsonText.substring(0, 200));
-        // Return null recipe but keep the text for display
+        console.error('[ChatBubble] JSON parse failed:', e);
+        console.error('[ChatBubble] JSON text was:', jsonText.substring(0, 500));
+        parseStatus = 'parse-error';
+        
+        // Try to extract partial data for debugging
+        try {
+          const partial = jsonText.match(/"title":\s*"([^"]+)"/);
+          if (partial) {
+            console.log('[ChatBubble] Found partial title:', partial[1]);
+          }
+        } catch {}
       }
     } else {
-      console.log('[ChatBubble] No complete recipe-json block found');
+      // Check if recipe block is being streamed (incomplete)
+      if (text.includes('```recipe-json')) {
+        console.log('[ChatBubble] Recipe block detected but incomplete (still streaming)');
+        parseStatus = 'streaming';
+      } else {
+        console.log('[ChatBubble] No recipe-json block found in message');
+      }
     }
     
     // Remove recipe-json blocks from display text
@@ -79,10 +110,10 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
     // Also remove incomplete blocks that might be streaming
     cleanText = cleanText.replace(/```recipe-json[\s\S]*$/g, '').trim();
     
-    return { recipe, cleanText };
+    return { recipe, cleanText, parseStatus };
   };
 
-  const { recipe, cleanText } = extractRecipe(message);
+  const { recipe, cleanText, parseStatus } = extractRecipe(message);
   const displayMessage = cleanText || message;
 
   // Trigger image generation in background when recipe is extracted
@@ -147,6 +178,18 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
           <ChefHat className="w-4 h-4 mr-2" />
           View Recipe
         </Button>
+      )}
+      
+      {parseStatus === 'parse-error' && (
+        <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+          Recipe data was malformed. This may be temporary. Try asking again or rephrase your request.
+        </div>
+      )}
+      
+      {parseStatus === 'streaming' && (
+        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+          Recipe is being generated... (recipe data is still loading)
+        </div>
       )}
       
       <span className="text-xs text-muted-foreground mt-1.5 px-1 opacity-60">

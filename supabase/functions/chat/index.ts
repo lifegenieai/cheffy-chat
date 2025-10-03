@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+// Version tracking to force redeployment
+const EDGE_FUNCTION_VERSION = "v2.0-single-agent-2025-01-02T20:00:00Z";
+console.log(`[CHAT EDGE FUNCTION] Deployed version: ${EDGE_FUNCTION_VERSION}`);
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -18,7 +22,8 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Received chat request with", messages?.length, "messages");
+    console.log(`[CHAT v${EDGE_FUNCTION_VERSION}] Received chat request with ${messages?.length} messages`);
+    console.log("[CHAT] Operating in SINGLE-AGENT mode (no writer/reviewer)");
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
