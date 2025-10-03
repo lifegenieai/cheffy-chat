@@ -330,88 +330,105 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-6 border-b border-border bg-background shadow-refined">
-        <div className="flex items-center gap-3">
-          <img 
-            src={logoLight} 
-            alt="Culinary Advisor" 
-            className="h-12 w-12"
-          />
-          <h1 className="text-2xl font-serif font-semibold text-foreground">
-            Culinary Advisor
-          </h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={() => setShowProfileSheet(true)}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <User className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Profile</span>
-          </Button>
-          <Button
-            onClick={() => setIsLibraryOpen(true)}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <BookOpen className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Library</span>
-          </Button>
-          <Button
-            onClick={() => setShowSettingsSheet(true)}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Settings</span>
-          </Button>
-          <Button
-            onClick={handleLogout}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Log Out</span>
-          </Button>
-        </div>
-      </header>
-
-      {/* Messages Area */}
-      <div 
-        ref={scrollAreaRef}
-        className="flex-1 overflow-y-auto px-4 py-6 pb-24"
-      >
-        <div className="max-w-2xl mx-auto space-y-4">
-          {messages.map((message) => (
-            message.eventType === "status" ? (
-              <div key={message.id} className="flex justify-center">
-                <div className="bg-muted text-muted-foreground text-sm px-4 py-2 rounded-full shadow-refined animate-fade-in">
-                  {message.content}
-                </div>
-              </div>
-            ) : (
-              <ChatBubble
-                key={message.id}
-                message={message.content}
-                role={message.role}
-                timestamp={message.timestamp}
-                onViewRecipe={(recipe) => {
-                  setCurrentRecipe(recipe);
-                  setIsFromLibrary(false);
-                  setIsRecipeSheetOpen(true);
-                }}
+    <div className="min-h-screen bg-muted/30">
+      <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <div className="flex w-full min-h-[calc(100vh-3rem)] flex-1 flex-col rounded-3xl border border-border bg-card shadow-refined sm:min-h-[calc(100vh-5rem)]">
+          {/* Header */}
+          <header className="flex items-start justify-between gap-6 border-b border-border px-6 py-8">
+            <div className="flex items-center gap-4">
+              <img
+                src={logoLight}
+                alt="Culinary Advisor"
+                className="h-14 w-14"
               />
-            )
-          ))}
-          {isLoading && <LoadingIndicator />}
-          <div ref={messagesEndRef} />
+              <div>
+                <h1 className="text-3xl font-serif font-semibold tracking-tight text-foreground sm:text-4xl">
+                  Culinary Advisor
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Tailored culinary counsel crafted for your kitchen.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Button
+                onClick={() => setShowProfileSheet(true)}
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <User className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Profile</span>
+              </Button>
+              <Button
+                onClick={() => setIsLibraryOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <BookOpen className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Library</span>
+              </Button>
+              <Button
+                onClick={() => setShowSettingsSheet(true)}
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Settings</span>
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Log Out</span>
+              </Button>
+            </div>
+          </header>
+
+          <div className="flex flex-1 flex-col">
+            {/* Messages Area */}
+            <div
+              ref={scrollAreaRef}
+              className="flex-1 overflow-y-auto px-6 py-8"
+            >
+              <div className="space-y-6">
+                {messages.map((message) => (
+                  message.eventType === "status" ? (
+                    <div key={message.id} className="flex justify-center">
+                      <div className="rounded-full bg-muted px-5 py-2 text-sm text-muted-foreground shadow-refined animate-fade-in">
+                        {message.content}
+                      </div>
+                    </div>
+                  ) : (
+                    <ChatBubble
+                      key={message.id}
+                      message={message.content}
+                      role={message.role}
+                      timestamp={message.timestamp}
+                      onViewRecipe={(recipe) => {
+                        setCurrentRecipe(recipe);
+                        setIsFromLibrary(false);
+                        setIsRecipeSheetOpen(true);
+                      }}
+                    />
+                  )
+                ))}
+                {isLoading && <LoadingIndicator />}
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
+
+            {/* Input Area */}
+            <ChatInput
+              onSendMessage={handleSendMessage}
+              disabled={isLoading}
+            />
+          </div>
         </div>
       </div>
 
@@ -419,21 +436,15 @@ const Index = () => {
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
-          className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center animate-[pulse_2s_ease-in-out_infinite] hover:animate-none"
+          className="fixed bottom-28 left-1/2 z-50 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-all duration-200 hover:shadow-lg animate-[pulse_2s_ease-in-out_infinite] hover:animate-none"
           style={{
             animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
           }}
           aria-label="Scroll to bottom"
         >
-          <ChevronDown className="w-5 h-5" />
+          <ChevronDown className="h-5 w-5" />
         </button>
       )}
-
-      {/* Input Area */}
-      <ChatInput 
-        onSendMessage={handleSendMessage} 
-        disabled={isLoading}
-      />
 
       {/* Recipe Sheet */}
       <Sheet open={isRecipeSheetOpen} onOpenChange={setIsRecipeSheetOpen}>
