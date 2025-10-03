@@ -16,6 +16,7 @@ import { Recipe } from "@/types/recipe";
 import { useSaveRecipe } from "@/hooks/useSaveRecipe";
 import { useLibraryRecipes } from "@/hooks/useLibraryRecipes";
 import logoLight from "@/assets/logo-light.png";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
@@ -116,15 +117,20 @@ const Index = () => {
 
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
-      
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken =
+        sessionData?.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
       const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ 
-          messages: [...messages, userMessage].map(m => ({ 
-            role: m.role, 
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(m => ({
+            role: m.role,
             content: m.content 
           }))
         }),
