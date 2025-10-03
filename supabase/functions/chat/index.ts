@@ -5,208 +5,289 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+const AI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const AI_MODEL = "google/gemini-2.5-flash";
+
+const MAIN_AGENT_ID = "culinary-director";
+const RECIPE_WRITER_AGENT_ID = "michelin-writer";
+const REVIEWER_AGENT_ID = "culinary-reviewer";
+
+const MAX_REVIEW_ROUNDS = 3;
+
+const MAIN_AGENT_SYSTEM_PROMPT = `You are the ${MAIN_AGENT_ID}, a senior culinary director orchestrating Michelin-starred recipe development. Your job is to analyze the full conversation with the guest and produce a concise creative brief for the recipe-writing chef along with a rigorous evaluation rubric.
+
+Respond ONLY as minified JSON with this shape:
+{
+  "writerBrief": "<clear instructions for the writer>",
+  "rubric": [
+    {
+      "criterion": "Name of dimension",
+      "expectations": "Concrete expectations the reviewer must verify"
+    }
+  ],
+  "failureConditions": ["Specific automatic-fail scenarios"]
+}
+
+Keep the brief chef-friendly and reference any important preferences from the guest. Ensure the rubric covers structure, authenticity, nutrition table completeness, and recipe-json validity.`;
+
+const WRITER_SYSTEM_PROMPT = `You are the ${RECIPE_WRITER_AGENT_ID}, a Michelin Star award-winning Master Chef and Culinary Instructor specializing in classical European and American cuisines, including expertise in American smoking and barbecue techniques. Your recipes and culinary guidance are inspired by Paul Bocuse, blending tradition with meticulous technique.
+
+**COMMUNICATION STYLE:**
+- Use a creative, friendly, and encouraging tone to build user confidence.
+- Maintain professional, globally-aware communication.
+- Engage in natural culinary conversations, answering questions about techniques, ingredients, cooking methods, and food culture.
+- If the request falls outside your specialization areas (classical European, American, smoking/barbecue), respond courteously and professionally while explaining your limitations.
+
+**RECIPE GENERATION BEHAVIOR:**
+- When the guest requests a dish, immediately provide the complete recipe—do not ask for confirmation.
+
+**OPERATIONAL REQUIREMENTS:**
+- Begin with a concise checklist (3-7 bullet points) outlining the main tasks for the request.
+- After the recipe, validate that all essential components are present and mention any assumptions.
+
+**RECIPE STRUCTURE:**
+- Follow this exact Markdown structure:
+  1. Introduction – elegant description with historical reference.
+  2. Tips – instructor-level guidance.
+  3. Equipment & Advanced Preparation – list equipment and prep.
+  4. Ingredients – Markdown table ordered by use with weight then volume, include yield.
+  5. Step By Step Instructions – numbered steps.
+  6. Nutritional Information – table with per-serving estimates.
+
+**STRUCTURED RECIPE DATA:**
+- Append a valid \`\`\`recipe-json code block with the structured recipe fields exactly as specified.
+
+**AUTHENTICITY:**
+- Respect regional fidelity and clearly mark modern adaptations.`;
+
+const REVIEWER_SYSTEM_PROMPT = `You are the ${REVIEWER_AGENT_ID}, a meticulous culinary reviewer. Evaluate drafts from the recipe writer against the provided rubric.
+
+Respond ONLY as minified JSON with this shape:
+{
+  "passed": true|false,
+  "score": number (0-100),
+  "feedback": "Targeted guidance to address any gaps"
+}
+
+If any failure condition is met, set passed to false and explain exactly what must change.`;
+
+const encoder = new TextEncoder();
+
+function formatSSEEvent(data: Record<string, unknown>) {
+  return `data: ${JSON.stringify(data)}\n\n`;
+}
+
+async function callLovableChat(
+  apiKey: string,
+  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+  signal?: AbortSignal,
+) {
+  const response = await fetch(AI_GATEWAY_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: AI_MODEL,
+      messages,
+      stream: false,
+    }),
+    signal,
+  });
+
+  if (response.status === 429) {
+    throw new Error("Rate limits exceeded. Please try again in a moment.");
+  }
+  if (response.status === 402) {
+    throw new Error("AI usage credits depleted. Please add credits to continue.");
+  }
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("AI gateway error:", response.status, errorText);
+    throw new Error("AI service temporarily unavailable.");
+  }
+
+  const body = await response.json();
+  const content = body?.choices?.[0]?.message?.content;
+  if (!content || typeof content !== "string") {
+    throw new Error("Unexpected AI response format.");
+  }
+  return content.trim();
+}
+
+function sanitizeJsonPayload(raw: string) {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("```")) {
+    return trimmed.replace(/```json|```/gi, "").trim();
+  }
+  return trimmed;
+}
+
+function conversationTranscript(messages: Array<{ role: string; content: string }>) {
+  return messages
+    .map((message) => `${message.role.toUpperCase()}: ${message.content}`)
+    .join("\n");
+}
+
+serve((req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const { messages } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
+  const stream = new ReadableStream({
+    start(controller) {
+      const sendEvent = (event: Record<string, unknown>) => {
+        controller.enqueue(encoder.encode(formatSSEEvent(event)));
+      };
 
-    console.log("Received chat request with", messages?.length, "messages");
+      (async () => {
+        try {
+          const { messages } = await req.json();
+          const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { 
-            role: "system", 
-            content: `You are a Michelin Star award-winning Master Chef and Culinary Instructor specializing in classical European and American cuisines, including expertise in American smoking and barbecue techniques. Your recipes and culinary guidance are inspired by Paul Bocuse, blending tradition with meticulous technique.
-
-**COMMUNICATION STYLE:**
-
-- Use a creative, friendly, and encouraging tone to build user confidence
-- Maintain professional, globally-aware communication
-- Engage in natural culinary conversations, answering questions about techniques, ingredients, cooking methods, and food culture
-- If the request falls outside your specialization areas (classical European, American, smoking/barbecue), respond courteously and professionally while explaining your limitations
-
-**RECIPE GENERATION BEHAVIOR:**
-
-When the user expresses interest in making a dish (e.g., "I want to make canelés", "how do I cook X", "tell me about making Y"), immediately proceed to generate the complete recipe. Do not ask for confirmation or whether they want to get started - they have already indicated their intent. Jump straight into the recipe following these requirements:
-
-**OPERATIONAL REQUIREMENTS:**
-
-Before providing your recipe, you must begin with a concise checklist (3-7 bullet points) outlining the main tasks you will perform for this culinary request.
-
-After completing your recipe, briefly validate that all essential recipe components are present and notify if any critical information is missing or assumptions you made.
-
-**RECIPE STRUCTURE:**
-
-You must follow this exact Markdown structure for all recipes:
-
-### 1. Introduction
-
-*Provide an elegant description with vivid imagery and include a relevant historical reference that highlights the dish's culinary heritage.*
-
-### 2. Tips
-
-*Share instructor-level cooking tips to help users master the recipe.*
-
-### 3. Equipment & Advanced Preparation
-
-*List all necessary equipment and any advance preparations required.*
-
-### 4. Ingredients
-
-*Present as a Markdown table with ingredients ordered by usage sequence. Include recipe yield clearly.*
-
-| Ingredient | Weight (g/oz) | Volume (cups, tbsp, etc.) | Notes/Preparation |
-|------------|--------------|--------------------------|-------------------|
-
-*Measurements must show weight first (grams or ounces), followed by volumetric equivalents.*
-
-### 5. Step By Step Instructions
-
-*Provide clear, numbered instructions for optimal clarity and usability.*
-
-### 6. Nutritional Information
-
-*Include estimated values per serving in this exact table format:*
-
-| Nutrient | Amount per Serving |
-|---------------------|-------------------|
-| Calories | X kcal |
-| Total Fat | X g |
-| Saturated Fat | X g |
-| Cholesterol | X mg |
-| Sodium | X mg |
-| Total Carbohydrates | X g |
-| Dietary Fiber | X g |
-| Sugars | X g |
-| Protein | X g |
-
-*If nutritional data is unavailable for any values, mark as "N/A" and explain the data gap in a footnote below the table.*
-
-**STRUCTURED RECIPE DATA:**
-
-CRITICAL: After completing your markdown recipe, you MUST append the structured recipe data in this exact format:
-
-\`\`\`recipe-json
-{
-  "id": "unique-recipe-id",
-  "title": "Recipe Title",
-  "category": "Appetizers|Soups|Salads|Main Dishes|Side Dishes|Desserts|Breads|Pastry",
-  "servings": 4,
-  "difficulty": "easy|medium|hard",
-  "prepTime": "30 minutes",
-  "cookTime": "1 hour",
-  "totalTime": "1 hour 30 minutes",
-  "introduction": "Brief introduction text",
-  "historicalContext": "Historical context if provided",
-  "tips": ["Tip 1", "Tip 2"],
-  "equipment": ["Equipment 1", "Equipment 2"],
-  "advancedPreparation": ["Prep step 1"],
-  "ingredients": [
-    {
-      "name": "Ingredient name",
-      "weightGrams": 100,
-      "weightOz": 3.5,
-      "volume": "1 cup",
-      "notes": "preparation notes"
-    }
-  ],
-  "instructions": [
-    {
-      "stepNumber": 1,
-      "description": "Step description",
-      "timing": "5 minutes",
-      "temperature": "medium heat"
-    }
-  ],
-  "nutrition": {
-    "calories": 450,
-    "totalFat": 20,
-    "saturatedFat": 8,
-    "cholesterol": 100,
-    "sodium": 500,
-    "totalCarbohydrates": 45,
-    "dietaryFiber": 5,
-    "sugars": 8,
-    "protein": 25
-  },
-  "nutritionNotes": "Optional notes about N/A values",
-  "createdAt": "ISO timestamp"
-}
-\`\`\`
-
-This JSON must be valid and complete. All numeric nutrition values should be numbers, or the string "N/A" if unavailable.
-
-**AUTHENTICITY AND HISTORICAL STANDARDS:**
-
-- Provide concise historical backgrounds that respect original methods and regional ingredients
-- Do not blend techniques or ingredients from different regions within a single recipe
-- Any modern adaptations or fusion suggestions should be clearly marked as separate suggestions, not part of the main traditional recipe
-- Maintain regional fidelity and authentic traditions
-
-For recipe requests, begin with your operational checklist, then proceed with the complete recipe following the exact structure outlined above, and ALWAYS end with the structured recipe-json block. For general culinary questions or conversations, provide expert guidance while maintaining your professional, encouraging tone without the formal recipe structure.`
-          },
-          ...messages,
-        ],
-        stream: true,
-      }),
-    });
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limits exceeded. Please try again in a moment." }), 
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          if (!LOVABLE_API_KEY) {
+            throw new Error("LOVABLE_API_KEY is not configured");
           }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI usage credits depleted. Please add credits to continue." }), 
-          {
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+
+          if (!Array.isArray(messages)) {
+            throw new Error("Invalid request payload: messages array is required.");
           }
-        );
-      }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      return new Response(
-        JSON.stringify({ error: "AI service temporarily unavailable." }), 
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+
+          console.log("Received chat request with", messages.length, "messages");
+
+          const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
+          const acknowledgement = lastUserMessage?.content
+            ? `Chef brigade received your request: "${lastUserMessage.content.slice(0, 120)}"`
+            : "Chef brigade received your request.";
+
+          sendEvent({ type: "status", content: `${acknowledgement} Coordinating specialists…` });
+
+          const transcript = conversationTranscript(messages);
+
+          sendEvent({ type: "status", content: "Drafting creative brief and evaluation rubric…" });
+
+          const mainAgentRaw = await callLovableChat(LOVABLE_API_KEY, [
+            { role: "system", content: MAIN_AGENT_SYSTEM_PROMPT },
+            {
+              role: "user",
+              content: `Conversation transcript for analysis:\n\n${transcript}`,
+            },
+          ]);
+
+          let mainAgent;
+          try {
+            mainAgent = JSON.parse(sanitizeJsonPayload(mainAgentRaw));
+          } catch (error) {
+            console.error("Failed to parse main agent response", error, mainAgentRaw);
+            throw new Error("Failed to generate creative brief. Please try again.");
+          }
+
+          const writerBrief: string = mainAgent.writerBrief;
+          const rubric = Array.isArray(mainAgent.rubric) ? mainAgent.rubric : [];
+          const failureConditions: string[] = Array.isArray(mainAgent.failureConditions)
+            ? mainAgent.failureConditions
+            : [];
+
+          if (!writerBrief || rubric.length === 0) {
+            throw new Error("Incomplete creative brief generated by main agent.");
+          }
+
+          sendEvent({ type: "status", content: "Brief ready. Commissioning recipe draft…" });
+
+          let approvedDraft = "";
+          let finalFeedback = "";
+
+          for (let attempt = 1; attempt <= MAX_REVIEW_ROUNDS; attempt++) {
+            const feedbackNote = finalFeedback
+              ? `\n\nReviewer feedback from previous round:\n${finalFeedback}`
+              : "";
+
+            const writerMessages = [
+              { role: "system", content: WRITER_SYSTEM_PROMPT },
+              {
+                role: "user",
+                content: `Chef brief:\n${writerBrief}\n\nQuality rubric reference:\n${JSON.stringify(
+                  rubric,
+                  null,
+                  2,
+                )}\n\nFailure conditions to avoid:\n${failureConditions.join("; ") || "None explicitly provided."}\n\nConversation history (most recent last):\n${transcript}${feedbackNote}`,
+              },
+            ];
+
+            sendEvent({
+              type: "status",
+              content: `Attempt ${attempt}/${MAX_REVIEW_ROUNDS}: drafting recipe…`,
+            });
+
+            const draft = await callLovableChat(LOVABLE_API_KEY, writerMessages);
+
+            sendEvent({
+              type: "status",
+              content: `Attempt ${attempt}/${MAX_REVIEW_ROUNDS}: reviewing draft for quality…`,
+            });
+
+            const reviewerMessages = [
+              { role: "system", content: REVIEWER_SYSTEM_PROMPT },
+              {
+                role: "user",
+                content: `Rubric:${JSON.stringify(rubric)}\nFailure conditions:${JSON.stringify(
+                  failureConditions,
+                )}\n\nDraft to review:\n${draft}`,
+              },
+            ];
+
+            const reviewRaw = await callLovableChat(LOVABLE_API_KEY, reviewerMessages);
+
+            let review;
+            try {
+              review = JSON.parse(sanitizeJsonPayload(reviewRaw));
+            } catch (error) {
+              console.error("Failed to parse reviewer response", error, reviewRaw);
+              throw new Error("Review step failed due to unexpected response. Please retry.");
+            }
+
+            if (review.passed) {
+              sendEvent({ type: "status", content: "Recipe approved. Finalizing response…" });
+              approvedDraft = draft;
+              break;
+            }
+
+            finalFeedback = typeof review.feedback === "string" ? review.feedback : "";
+
+            if (attempt < MAX_REVIEW_ROUNDS) {
+              sendEvent({
+                type: "status",
+                content: `Reviewer feedback for revision: ${finalFeedback || "Please address rubric gaps."}`,
+              });
+            }
+          }
+
+          if (!approvedDraft) {
+            const failureMessage =
+              finalFeedback ||
+              "Unable to satisfy the quality rubric within the retry limit. Please adjust the request and try again.";
+            sendEvent({ type: "error", content: failureMessage });
+            controller.close();
+            return;
+          }
+
+          sendEvent({ type: "assistant", content: approvedDraft });
+          controller.close();
+        } catch (e) {
+          console.error("Chat workflow error:", e);
+          const message = e instanceof Error ? e.message : "An unexpected error occurred";
+          controller.enqueue(encoder.encode(formatSSEEvent({ type: "error", content: message })));
+          controller.close();
         }
-      );
-    }
+      })();
+    },
+    cancel() {
+      console.log("Client disconnected from chat stream.");
+    },
+  });
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-    });
-  } catch (e) {
-    console.error("Chat error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "An unexpected error occurred" }), 
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
-  }
+  return new Response(stream, {
+    headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+  });
 });
