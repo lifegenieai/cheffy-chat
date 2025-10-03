@@ -345,9 +345,6 @@ const Index = () => {
                 <h1 className="text-3xl font-serif font-semibold tracking-tight text-foreground sm:text-4xl">
                   Culinary Advisor
                 </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Tailored culinary counsel crafted for your kitchen.
-                </p>
               </div>
             </div>
             <div className="flex items-center gap-3 sm:gap-4">
