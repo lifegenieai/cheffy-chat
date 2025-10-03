@@ -330,32 +330,32 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-        <div className="flex w-full min-h-[calc(100vh-3rem)] flex-1 flex-col rounded-3xl border border-border bg-card shadow-refined sm:min-h-[calc(100vh-5rem)]">
-          {/* Header */}
-          <header className="flex items-start justify-between gap-6 border-b border-border px-6 py-8">
-            <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-background">
+      <div className="flex min-h-screen flex-col">
+        {/* Header */}
+        <header className="border-b border-border/70 bg-background/95 px-4 py-10 shadow-[0_1px_0_rgba(15,23,42,0.05)] backdrop-blur-sm sm:px-6 lg:px-8">
+          <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-6">
               <img
                 src={logoLight}
                 alt="Culinary Advisor"
-                className="h-14 w-14"
+                className="h-16 w-16"
               />
               <div>
-                <h1 className="text-3xl font-serif font-semibold tracking-tight text-foreground sm:text-4xl">
+                <h1 className="text-4xl font-serif font-semibold tracking-tight text-foreground sm:text-5xl">
                   Culinary Advisor
                 </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-2 text-base text-muted-foreground">
                   Tailored culinary counsel crafted for your kitchen.
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex flex-wrap items-center gap-3 sm:justify-end sm:gap-4">
               <Button
                 onClick={() => setShowProfileSheet(true)}
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-foreground"
+                className="h-11 rounded-full px-5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 <User className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">Profile</span>
@@ -364,7 +364,7 @@ const Index = () => {
                 onClick={() => setIsLibraryOpen(true)}
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-foreground"
+                className="h-11 rounded-full px-5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 <BookOpen className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">Library</span>
@@ -373,7 +373,7 @@ const Index = () => {
                 onClick={() => setShowSettingsSheet(true)}
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-foreground"
+                className="h-11 rounded-full px-5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Settings className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">Settings</span>
@@ -382,54 +382,57 @@ const Index = () => {
                 onClick={handleLogout}
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-foreground"
+                className="h-11 rounded-full px-5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">Log Out</span>
               </Button>
             </div>
-          </header>
-
-          <div className="flex flex-1 flex-col">
-            {/* Messages Area */}
-            <div
-              ref={scrollAreaRef}
-              className="flex-1 overflow-y-auto px-6 py-8"
-            >
-              <div className="space-y-6">
-                {messages.map((message) => (
-                  message.eventType === "status" ? (
-                    <div key={message.id} className="flex justify-center">
-                      <div className="rounded-full bg-muted px-5 py-2 text-sm text-muted-foreground shadow-refined animate-fade-in">
-                        {message.content}
-                      </div>
-                    </div>
-                  ) : (
-                    <ChatBubble
-                      key={message.id}
-                      message={message.content}
-                      role={message.role}
-                      timestamp={message.timestamp}
-                      onViewRecipe={(recipe) => {
-                        setCurrentRecipe(recipe);
-                        setIsFromLibrary(false);
-                        setIsRecipeSheetOpen(true);
-                      }}
-                    />
-                  )
-                ))}
-                {isLoading && <LoadingIndicator />}
-                <div ref={messagesEndRef} />
-              </div>
-            </div>
-
-            {/* Input Area */}
-            <ChatInput
-              onSendMessage={handleSendMessage}
-              disabled={isLoading}
-            />
           </div>
-        </div>
+        </header>
+
+        <main className="flex-1">
+          <div className="mx-auto flex h-full w-full max-w-5xl flex-col px-4 pb-20 pt-10 sm:px-6 lg:px-8">
+            <section className="relative flex flex-1 flex-col overflow-hidden rounded-[2.5rem] bg-card/90 p-6 shadow-[0_45px_120px_-60px_rgba(15,23,42,0.55)] backdrop-blur">
+              <div
+                ref={scrollAreaRef}
+                className="flex-1 overflow-y-auto px-1 sm:px-3"
+              >
+                <div className="space-y-6">
+                  {messages.map((message) => (
+                    message.eventType === "status" ? (
+                      <div key={message.id} className="flex justify-center">
+                        <div className="rounded-full bg-muted px-5 py-2 text-sm text-muted-foreground shadow-refined animate-fade-in">
+                          {message.content}
+                        </div>
+                      </div>
+                    ) : (
+                      <ChatBubble
+                        key={message.id}
+                        message={message.content}
+                        role={message.role}
+                        timestamp={message.timestamp}
+                        onViewRecipe={(recipe) => {
+                          setCurrentRecipe(recipe);
+                          setIsFromLibrary(false);
+                          setIsRecipeSheetOpen(true);
+                        }}
+                      />
+                    )
+                  ))}
+                  {isLoading && <LoadingIndicator />}
+                  <div ref={messagesEndRef} />
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+
+        {/* Input Area */}
+        <ChatInput
+          onSendMessage={handleSendMessage}
+          disabled={isLoading}
+        />
       </div>
 
       {/* Scroll to Bottom Button */}

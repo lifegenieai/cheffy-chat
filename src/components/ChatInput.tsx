@@ -26,25 +26,27 @@ const ChatInput = ({ onSendMessage, disabled = false }: ChatInputProps) => {
   };
 
   return (
-    <footer className="sticky bottom-0 inset-x-0 border-t border-border bg-card/95 px-4 py-5 shadow-[0_-8px_24px_-20px_rgb(15_23_42/0.32)] backdrop-blur supports-[backdrop-filter]:bg-card/85 sm:px-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask me anything about recipes, techniques, or ingredients..."
-          disabled={disabled}
-          className="w-full flex-1 resize-none rounded-2xl border border-input bg-background/60 px-4 py-4 text-base leading-relaxed shadow-sm transition-standard placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 min-h-[60px] max-h-36"
-          rows={1}
-        />
-        <Button
-          onClick={handleSend}
-          disabled={!input.trim() || disabled}
-          className="h-14 w-full rounded-2xl shadow-refined transition-standard hover:shadow-refined-md sm:w-16"
-        >
-          <Send className="h-5 w-5" />
-          <span className="sr-only">Send message</span>
-        </Button>
+    <footer className="border-t border-border/70 bg-background/90 pb-10 pt-6 sm:pt-8">
+      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask me anything about recipes, techniques, or ingredients..."
+            disabled={disabled}
+            className="w-full flex-1 resize-none rounded-[1.25rem] border border-border/70 bg-card px-5 py-4 text-base leading-relaxed shadow-none transition-all duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/70 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 min-h-[64px] max-h-36"
+            rows={1}
+          />
+          <Button
+            onClick={handleSend}
+            disabled={!input.trim() || disabled}
+            className="h-14 w-full rounded-[1.25rem] px-6 text-base font-medium shadow-none transition-transform duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:translate-y-0 sm:w-auto sm:px-8"
+          >
+            <Send className="h-5 w-5" />
+            <span className="sr-only">Send message</span>
+          </Button>
+        </div>
       </div>
     </footer>
   );
