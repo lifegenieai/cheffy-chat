@@ -25,22 +25,61 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
 
   // Extract recipe JSON if present (wrapped in ```recipe-json ... ```)
   const extractRecipe = (text: string): { recipe: Recipe | null; cleanText: string } => {
-    // First, remove any recipe-json blocks (even incomplete ones during streaming)
+    console.log('[ChatBubble] Extracting recipe from message, length:', text.length);
+    
+    // Try to find complete recipe-json block first
+    const recipeMatch = text.match(/```recipe-json\s*\n([\s\S]*?)\n```/);
+    
+    let recipe: Recipe | null = null;
+    if (recipeMatch) {
+      const jsonText = recipeMatch[1].trim();
+      console.log('[ChatBubble] Found recipe-json block, attempting to parse...');
+      
+      try {
+        recipe = JSON.parse(jsonText) as Recipe;
+        console.log('[ChatBubble] Successfully parsed recipe:', recipe.title);
+        
+        // Validate required fields and provide defaults
+        if (!recipe.id) recipe.id = `recipe-${Date.now()}`;
+        if (!recipe.title) recipe.title = "Untitled Recipe";
+        if (!recipe.category) recipe.category = "Main Dishes";
+        if (!recipe.servings) recipe.servings = 4;
+        if (!recipe.difficulty) recipe.difficulty = "medium";
+        if (!recipe.ingredients) recipe.ingredients = [];
+        if (!recipe.instructions) recipe.instructions = [];
+        if (!recipe.tips) recipe.tips = [];
+        if (!recipe.equipment) recipe.equipment = [];
+        if (!recipe.createdAt) recipe.createdAt = new Date().toISOString();
+        
+        // Ensure nutrition object exists with proper types
+        if (!recipe.nutrition) {
+          recipe.nutrition = {
+            calories: "N/A" as any,
+            totalFat: "N/A" as any,
+            saturatedFat: "N/A" as any,
+            cholesterol: "N/A" as any,
+            sodium: "N/A" as any,
+            totalCarbohydrates: "N/A" as any,
+            dietaryFiber: "N/A" as any,
+            sugars: "N/A" as any,
+            protein: "N/A" as any,
+          };
+        }
+      } catch (e) {
+        console.error('[ChatBubble] Failed to parse recipe JSON:', e);
+        console.error('[ChatBubble] JSON text was:', jsonText.substring(0, 200));
+        // Return null recipe but keep the text for display
+      }
+    } else {
+      console.log('[ChatBubble] No complete recipe-json block found');
+    }
+    
+    // Remove recipe-json blocks from display text
     let cleanText = text.replace(/```recipe-json[\s\S]*?```/g, '').trim();
     // Also remove incomplete blocks that might be streaming
     cleanText = cleanText.replace(/```recipe-json[\s\S]*$/g, '').trim();
     
-    // Try to parse complete recipe blocks
-    const recipeMatch = text.match(/```recipe-json\n([\s\S]*?)\n```/);
-    if (recipeMatch) {
-      try {
-        const recipe = JSON.parse(recipeMatch[1]) as Recipe;
-        return { recipe, cleanText };
-      } catch (e) {
-        console.error('Failed to parse recipe:', e);
-      }
-    }
-    return { recipe: null, cleanText };
+    return { recipe, cleanText };
   };
 
   const { recipe, cleanText } = extractRecipe(message);
