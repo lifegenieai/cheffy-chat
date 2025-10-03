@@ -9,6 +9,7 @@ import Chat from "./pages/Chat";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import ChatBubbleExamplePage from "./pages/ChatBubbleExamplePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => {
               <Route path="/" element={<LandingPage />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/examples/chat-bubble" element={<ChatBubbleExamplePage />} />
               <Route path="/chat" element={
                 <ProtectedRoute>
                   <Chat />

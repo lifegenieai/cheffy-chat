@@ -7,6 +7,16 @@ import { ChefHat } from "lucide-react";
 import { Recipe } from "@/types/recipe";
 import { generateRecipeImage } from "@/lib/recipeImageService";
 
+const RECIPE_BLOCK_PATTERN = /```(?:recipe[-_]?json|json)\s*\n([\s\S]*?)```/i;
+const RECIPE_BLOCK_REMOVAL = /```(?:recipe[-_]?json|json)[\s\S]*?```/gi;
+
+const sanitizeRecipeBlock = (block: string) =>
+  block
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/\u00A0/g, ' ')
+    .trim();
+
 interface ChatBubbleProps {
   message: string;
   role: "user" | "assistant";
@@ -28,15 +38,16 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
   // Extract recipe JSON if present (wrapped in ```recipe-json ... ```)
   const extractRecipe = (text: string): { recipe: Recipe | null; cleanText: string } => {
     // First, remove any recipe-json blocks (even incomplete ones during streaming)
-    let cleanText = text.replace(/```recipe-json[\s\S]*?```/g, '').trim();
+    let cleanText = text.replace(RECIPE_BLOCK_REMOVAL, '').trim();
     // Also remove incomplete blocks that might be streaming
-    cleanText = cleanText.replace(/```recipe-json[\s\S]*$/g, '').trim();
-    
+    cleanText = cleanText.replace(/```(?:recipe[-_]?json|json)[\s\S]*$/gi, '').trim();
+
     // Try to parse complete recipe blocks
-    const recipeMatch = text.match(/```recipe-json\n([\s\S]*?)\n```/);
+    const recipeMatch = text.match(RECIPE_BLOCK_PATTERN);
     if (recipeMatch) {
       try {
-        const recipe = JSON.parse(recipeMatch[1]) as Recipe;
+        const sanitizedBlock = sanitizeRecipeBlock(recipeMatch[1]);
+        const recipe = JSON.parse(sanitizedBlock) as Recipe;
         return { recipe, cleanText };
       } catch (e) {
         console.error('Failed to parse recipe:', e);
