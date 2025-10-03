@@ -48,7 +48,7 @@ const Index = () => {
   const [showSettingsSheet, setShowSettingsSheet] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { user, signOut } = useAuth();
+  const { session, signOut } = useAuth();
   const navigate = useNavigate();
   const saveRecipeMutation = useSaveRecipe();
   const { data: savedRecipes } = useLibraryRecipes();
@@ -137,11 +137,16 @@ const Index = () => {
 
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
-      
+      const accessToken = session?.access_token;
+
       const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(accessToken && {
+            Authorization: `Bearer ${accessToken}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          }),
         },
         body: JSON.stringify({
           messages: [...conversationHistory, userMessage].map(m => ({
