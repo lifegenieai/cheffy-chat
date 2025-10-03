@@ -17,11 +17,14 @@ import { useSaveRecipe } from "@/hooks/useSaveRecipe";
 import { useLibraryRecipes } from "@/hooks/useLibraryRecipes";
 import logoLight from "@/assets/logo-light.png";
 
+type MessageEventType = "user" | "assistant" | "status" | "error";
+
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  eventType: MessageEventType;
 }
 
 const Index = () => {
@@ -30,7 +33,8 @@ const Index = () => {
       id: "1",
       role: "assistant",
       content: "Good day. I'm your culinary advisor, here to guide you through recipes, techniques, and ingredient selections with precision and expertise. How may I assist you today?",
-      timestamp: new Date()
+      timestamp: new Date(),
+      eventType: "assistant"
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -108,10 +112,27 @@ const Index = () => {
       id: Date.now().toString(),
       role: "user",
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      eventType: "user"
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const statusMessageId = `${Date.now()}-status`;
+    const statusMessage: Message = {
+      id: statusMessageId,
+      role: "assistant",
+      content: "Recipe under development…",
+      timestamp: new Date(),
+      eventType: "status"
+    };
+
+    const conversationHistory = messages
+      .filter(message => message.eventType === "user" || message.eventType === "assistant")
+      .map(m => ({
+        role: m.role,
+        content: m.content
+      }));
+
+    setMessages(prev => [...prev, userMessage, statusMessage]);
     setIsLoading(true);
 
     try {
@@ -122,10 +143,10 @@ const Index = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          messages: [...messages, userMessage].map(m => ({ 
-            role: m.role, 
-            content: m.content 
+        body: JSON.stringify({
+          messages: [...conversationHistory, userMessage].map(m => ({
+            role: m.role,
+            content: m.content
           }))
         }),
       });
@@ -137,14 +158,15 @@ const Index = () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let textBuffer = "";
-      let streamDone = false;
       let assistantContent = "";
-      let assistantMessageId = (Date.now() + 1).toString();
+      let assistantMessageId: string | null = null;
+      let streamDone = false;
+      let encounteredError = false;
 
       while (!streamDone) {
         const { done, value } = await reader.read();
         if (done) break;
-        
+
         textBuffer += decoder.decode(value, { stream: true });
 
         let newlineIndex: number;
@@ -153,38 +175,111 @@ const Index = () => {
           textBuffer = textBuffer.slice(newlineIndex + 1);
 
           if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
+          if (line.startsWith(":")) continue;
+          if (line.trim() === "") continue;
+          if (!line.startsWith("data:")) continue;
 
-          const jsonStr = line.slice(6).trim();
+          const jsonStr = line.slice(5).trim();
+          if (jsonStr === "") continue;
           if (jsonStr === "[DONE]") {
             streamDone = true;
             break;
           }
 
           try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            
-            if (content) {
-              assistantContent += content;
-              
-              setMessages(prev => {
-                const lastMsg = prev[prev.length - 1];
-                if (lastMsg?.role === 'assistant' && lastMsg.id === assistantMessageId) {
-                  return prev.map(m => 
-                    m.id === assistantMessageId 
-                      ? { ...m, content: assistantContent }
-                      : m
+            const parsed = JSON.parse(jsonStr) as {
+              type: "status" | "assistant" | "error" | string;
+              content?: string;
+              done?: boolean;
+            };
+
+            const { type, content, done } = parsed;
+
+            if (type === "status") {
+              const statusText = content || (done ? "Recipe ready to view." : undefined);
+
+              if (statusText) {
+                setMessages(prev =>
+                  prev.map(message =>
+                    message.id === statusMessageId
+                      ? { ...message, content: statusText, timestamp: new Date() }
+                      : message
+                  )
+                );
+              }
+
+              if (done) {
+                streamDone = true;
+                break;
+              }
+
+              continue;
+            }
+
+            if (type === "assistant") {
+              if (content) {
+                assistantContent += content;
+
+                if (!assistantMessageId) {
+                  assistantMessageId = `${Date.now()}-assistant`;
+                  const newAssistantMessage: Message = {
+                    id: assistantMessageId,
+                    role: "assistant",
+                    content: assistantContent,
+                    timestamp: new Date(),
+                    eventType: "assistant"
+                  };
+                  setMessages(prev => [...prev, newAssistantMessage]);
+                } else {
+                  setMessages(prev =>
+                    prev.map(message =>
+                      message.id === assistantMessageId
+                        ? { ...message, content: assistantContent, timestamp: new Date() }
+                        : message
+                    )
                   );
                 }
-                return [...prev, {
-                  id: assistantMessageId,
-                  role: 'assistant' as const,
-                  content: assistantContent,
-                  timestamp: new Date()
-                }];
+              }
+
+              if (done) {
+                streamDone = true;
+                break;
+              }
+
+              continue;
+            }
+
+            if (type === "error") {
+              const fallbackStatus = "We encountered an issue while developing your recipe.";
+
+              setMessages(prev => {
+                const updated = prev.map(message =>
+                  message.id === statusMessageId
+                    ? {
+                        ...message,
+                        content: content || fallbackStatus,
+                        timestamp: new Date()
+                      }
+                    : message
+                );
+
+                if (content) {
+                  const errorMessage: Message = {
+                    id: `${Date.now()}-error`,
+                    role: "assistant",
+                    content,
+                    timestamp: new Date(),
+                    eventType: "error"
+                  };
+                  return [...updated, errorMessage];
+                }
+
+                return updated;
               });
+
+              encounteredError = true;
+              streamDone = true;
+              break;
             }
           } catch {
             textBuffer = line + "\n" + textBuffer;
@@ -193,16 +288,37 @@ const Index = () => {
         }
       }
 
+      if (!encounteredError) {
+        setMessages(prev =>
+          prev.map(message =>
+            message.id === statusMessageId && message.eventType === "status" && message.content === "Recipe under development…"
+              ? { ...message, content: "Recipe ready to view.", timestamp: new Date() }
+              : message
+          )
+        );
+      }
+
       setIsLoading(false);
     } catch (error) {
       console.error("Chat error:", error);
       setIsLoading(false);
-      
+
+      const fallbackStatus = "We encountered an issue while developing your recipe.";
+
+      setMessages(prev =>
+        prev.map(message =>
+          message.id === statusMessageId && message.eventType === "status"
+            ? { ...message, content: fallbackStatus, timestamp: new Date() }
+            : message
+        )
+      );
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: "I apologize, but I'm temporarily unable to respond. Please try again in a moment.",
-        timestamp: new Date()
+        timestamp: new Date(),
+        eventType: "error"
       };
       setMessages(prev => [...prev, errorMessage]);
     }
@@ -269,17 +385,25 @@ const Index = () => {
       >
         <div className="max-w-2xl mx-auto space-y-4">
           {messages.map((message) => (
-            <ChatBubble
-              key={message.id}
-              message={message.content}
-              role={message.role}
-              timestamp={message.timestamp}
-              onViewRecipe={(recipe) => {
-                setCurrentRecipe(recipe);
-                setIsFromLibrary(false);
-                setIsRecipeSheetOpen(true);
-              }}
-            />
+            message.eventType === "status" ? (
+              <div key={message.id} className="flex justify-center">
+                <div className="bg-muted text-muted-foreground text-sm px-4 py-2 rounded-full shadow-refined animate-fade-in">
+                  {message.content}
+                </div>
+              </div>
+            ) : (
+              <ChatBubble
+                key={message.id}
+                message={message.content}
+                role={message.role}
+                timestamp={message.timestamp}
+                onViewRecipe={(recipe) => {
+                  setCurrentRecipe(recipe);
+                  setIsFromLibrary(false);
+                  setIsRecipeSheetOpen(true);
+                }}
+              />
+            )
           ))}
           {isLoading && <LoadingIndicator />}
           <div ref={messagesEndRef} />
