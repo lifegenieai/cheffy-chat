@@ -150,10 +150,10 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
       
       <div
         className={cn(
-          "max-w-[85%] rounded-xl px-5 py-4 shadow-refined transition-standard",
-          isUser 
-            ? "bg-primary text-primary-foreground" 
-            : "bg-secondary text-secondary-foreground"
+          "transition-standard",
+          isUser
+            ? "max-w-[85%] rounded-xl px-5 py-4 shadow-refined bg-primary text-primary-foreground"
+            : "w-full max-w-2xl px-0 py-0 bg-transparent text-foreground"
         )}
       >
         {isUser ? (
