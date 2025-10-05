@@ -1,12 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, BookOpen, ChevronDown, User, Settings } from "lucide-react";
+import { LogOut, BookOpen, ChevronDown, User, Settings, MoreVertical, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { RecipeCard } from "@/components/RecipeCard";
 import { LibrarySheet } from "@/components/LibrarySheet";
 import { ProfileSheet } from "@/components/ProfileSheet";
@@ -52,6 +59,29 @@ const Index = () => {
   const handleLogout = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleNewChat = () => {
+    // Clear messages except welcome message
+    setMessages([
+      {
+        id: "1",
+        role: "assistant",
+        content: "Good day. I'm your culinary advisor, here to guide you through recipes, techniques, and ingredient selections with precision and expertise. How may I assist you today?",
+        timestamp: new Date()
+      }
+    ]);
+    
+    // Close any open sheets
+    setIsRecipeSheetOpen(false);
+    setIsLibraryOpen(false);
+    
+    // Reset current recipe
+    setCurrentRecipe(null);
+    setIsFromLibrary(false);
+    
+    // Scroll to bottom
+    setTimeout(() => scrollToBottom(), 100);
   };
 
   const handleSaveRecipe = () => {
@@ -252,47 +282,64 @@ const Index = () => {
             alt="Culinary Advisor" 
             className="h-12 w-12"
           />
-          <h1 className="text-2xl font-serif font-semibold text-foreground">
+          <h1 className="text-xl sm:text-2xl font-serif font-semibold text-foreground">
             Culinary Advisor
           </h1>
         </div>
-        <div className="flex items-center gap-4">
+        
+        {/* Right: New Chat + Menu */}
+        <div className="flex items-center gap-2">
+          {/* New Chat Button */}
           <Button
-            onClick={() => setShowProfileSheet(true)}
+            onClick={handleNewChat}
             variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
+            size="icon"
+            className="w-10 h-10 text-muted-foreground hover:text-foreground transition-standard"
+            aria-label="Start new chat"
           >
-            <User className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Profile</span>
+            <Edit3 className="w-5 h-5" />
           </Button>
-          <Button
-            onClick={() => setIsLibraryOpen(true)}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <BookOpen className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Library</span>
-          </Button>
-          <Button
-            onClick={() => setShowSettingsSheet(true)}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Settings</span>
-          </Button>
-          <Button
-            onClick={handleLogout}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Log Out</span>
-          </Button>
+          
+          {/* Three-Dot Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10 h-10 text-muted-foreground hover:text-foreground transition-standard"
+                aria-label="Menu"
+              >
+                <MoreVertical className="w-5 h-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setShowProfileSheet(true)}>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={() => setIsLibraryOpen(true)}>
+                <BookOpen className="mr-2 h-4 w-4" />
+                <span>Library</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={() => setShowSettingsSheet(true)}>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuItem 
+                onClick={handleLogout}
+                className="text-red-600 focus:text-red-600"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log Out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
