@@ -73,12 +73,15 @@ You must follow this exact Markdown structure for all recipes:
 | Ingredient | Weight | Volume | Notes/Preparation |
 |------------|--------|--------|-------------------|
 
-*Measurement guidelines:*
-- **Solid ingredients**: Provide weight in grams (e.g., "250g", "1.5kg")
-- **Liquids**: Provide weight in milliliters (e.g., "120ml", "500ml")
-- **Small amounts** (spices, seasonings, zests): Use dashes (—) when impractical to weigh
-- Always include volume measurements for usability (cups, tbsp, tsp, etc.)
-- **Metric only** - no imperial measurements
+            *Measurement guidelines:*
+            - **Solid ingredients**: Provide weight in grams (e.g., "250g", "1.5kg") in the Weight field
+            - **Liquids**: Provide weight in milliliters (e.g., "120ml", "500ml") in the Weight field
+            - **Small amounts** (spices, seasonings, zests): 
+              - Still provide weight in grams in the Weight field (e.g., "5g", "10g", "2.5g")
+              - Use dashes (—) in the Weight field ONLY if truly impossible to provide weight
+            - Volume measurements go in a SEPARATE Volume field (cups, tbsp, tsp, etc.)
+            - **CRITICAL**: Never combine weight and volume in the same field (e.g., NO "10g (2 tsp)" - this must be split)
+            - **Metric only** - no imperial measurements
 
 ### 5. Step By Step Instructions
 
@@ -121,13 +124,38 @@ CRITICAL: After completing your markdown recipe, you MUST append the structured 
   "equipment": ["Equipment 1", "Equipment 2"],
   "advancedPreparation": ["Prep step 1"],
   "ingredients": [
-    {
-      "name": "Ingredient name",
-      "weight": "250g",
-      "volume": "1 cup / 240ml",
-      "notes": "preparation notes if applicable"
-    }
-  ],
+              {
+                "name": "All-purpose flour",
+                "weight": "250g",
+                "volume": "2 cups",
+                "notes": "Sifted"
+              },
+              {
+                "name": "Olive oil",
+                "weight": "120ml",
+                "volume": "1/2 cup",
+                "notes": "Extra virgin"
+              },
+              {
+                "name": "Baking soda",
+                "weight": "10g",
+                "volume": "2 tsp",
+                "notes": null
+              },
+              {
+                "name": "Fine sea salt",
+                "weight": "5g",
+                "volume": "1 tsp",
+                "notes": null
+              }
+            ],
+            
+            **CRITICAL DATA STRUCTURE RULES:**
+            - Each ingredient MUST have separate \`weight\` and \`volume\` fields
+            - NEVER combine weight and volume into one field (e.g., "10g (2 tsp)" is WRONG)
+            - The \`weight\` field contains ONLY the metric weight: "250g", "5g", "120ml", or "—"
+            - The \`volume\` field contains ONLY the volume measurement: "2 cups", "1 tsp", "1/2 cup"
+            - Small amounts like spices still get numeric weight (e.g., "5g") unless truly impossible to measure
   "instructions": [
     {
       "stepNumber": 1,
