@@ -287,7 +287,7 @@ const Index = () => {
           </h1>
         </div>
         
-        {/* Right: New Chat + Menu */}
+        {/* Right: New Chat + Library + Menu */}
         <div className="flex items-center gap-2">
           {/* New Chat Button */}
           <Button
@@ -298,6 +298,17 @@ const Index = () => {
             aria-label="Start new chat"
           >
             <Edit3 className="w-5 h-5" />
+          </Button>
+          
+          {/* Library Button */}
+          <Button
+            onClick={() => setIsLibraryOpen(true)}
+            variant="ghost"
+            size="icon"
+            className="w-10 h-10 text-muted-foreground hover:text-foreground transition-standard"
+            aria-label="Open library"
+          >
+            <BookOpen className="w-5 h-5" />
           </Button>
           
           {/* Three-Dot Menu */}
