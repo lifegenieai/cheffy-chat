@@ -41,6 +41,27 @@ serve(async (req) => {
       );
     }
 
+    // Check if file already exists in storage (prevents duplicates if DB entry missing)
+    const searchTerm = dishName.toLowerCase().replace(/[^a-z0-9]/g, "-");
+    const { data: existingFiles } = await supabase.storage
+      .from("recipe-images")
+      .list('', {
+        search: searchTerm
+      });
+
+    if (existingFiles && existingFiles.length > 0) {
+      console.log(`File already exists in storage for: ${dishName}, using existing`);
+      const existingFile = existingFiles[0];
+      const { data: urlData } = supabase.storage
+        .from("recipe-images")
+        .getPublicUrl(existingFile.name);
+      
+      return new Response(
+        JSON.stringify({ imageUrl: urlData.publicUrl, cached: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Generate new image
     const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
     if (!geminiApiKey) {

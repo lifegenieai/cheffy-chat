@@ -4,6 +4,8 @@ import remarkGfm from "remark-gfm";
 import { Button } from "./ui/button";
 import { ChefHat } from "lucide-react";
 import { Recipe } from "@/types/recipe";
+import { useState, useEffect } from "react";
+import { generateRecipeImage } from "@/lib/recipeImageService";
 
 interface ChatBubbleProps {
   message: string;
@@ -115,20 +117,27 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
 
   const { recipe, cleanText, parseStatus } = extractRecipe(message);
   const displayMessage = cleanText || message;
+  const [imageRequested, setImageRequested] = useState(false);
 
-  // Trigger image generation in background when recipe is extracted
-  if (recipe && recipe.title && onViewRecipe) {
-    import("@/lib/recipeImageService").then(({ generateRecipeImage }) => {
+  // Trigger background image generation only once per unique recipe
+  useEffect(() => {
+    if (recipe && recipe.title && onViewRecipe && !imageRequested && !recipe.imageUrl) {
+      console.log('[ChatBubble] Requesting image generation for:', recipe.title);
+      setImageRequested(true);
+      
       generateRecipeImage(recipe.title, recipe.id)
         .then(result => {
           if (result.imageUrl && recipe) {
-            // Update recipe with image URL
             recipe.imageUrl = result.imageUrl;
+            console.log('[ChatBubble] Image URL received:', result.imageUrl);
           }
         })
-        .catch(err => console.error("Failed to generate recipe image:", err));
-    });
-  }
+        .catch(err => {
+          console.error("Failed to generate recipe image:", err);
+          setImageRequested(false); // Allow retry on error
+        });
+    }
+  }, [recipe?.id, recipe?.title, onViewRecipe, imageRequested]);
 
   return (
     <div 
