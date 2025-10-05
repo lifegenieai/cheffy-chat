@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
-import { MessageCircle, Clock, BookOpen, ChefHat, Utensils } from "lucide-react";
+import { MessageCircle, Clock, BookOpen, ChefHat, Utensils, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import heroDish from "@/assets/hero-dish.png";
 import cookingProcess from "@/assets/cooking-process.png";
@@ -13,11 +13,31 @@ import logo from "@/assets/logo.png";
 const LandingPage = () => {
   const navigate = useNavigate();
   const { user, isReturningUser, signOut } = useAuth();
+  const [isBrigadeVisible, setIsBrigadeVisible] = useState(false);
+  const brigadeRef = useRef<HTMLElement>(null);
+  
   useEffect(() => {
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsBrigadeVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (brigadeRef.current) {
+      observer.observe(brigadeRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
   const handleStartCooking = () => {
     navigate('/chat');
@@ -102,8 +122,8 @@ const LandingPage = () => {
         </div>
 
         {/* Content Side */}
-        <div className="flex items-center justify-center px-6 py-16 lg:px-16 lg:py-24">
-          <div className="max-w-xl text-center">
+        <div className="flex items-center justify-center px-6 py-16 lg:px-16 lg:py-24 pb-24 md:pb-32">
+          <div className="max-w-xl text-center relative">
             <img src={logo} alt="Culinary Advisor" className="w-24 h-24 mx-auto mb-6" />
             <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">
               Culinary Expertise You Can Trust
@@ -119,12 +139,29 @@ const LandingPage = () => {
                 {isReturningUser ? 'Welcome back' : 'Create a free account to get started'}
               </p>
             )}
+            
+            {/* Scroll Indicator */}
+            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
+              <ChevronDown className="w-8 h-8 text-[#8B7355]/60" strokeWidth={1.5} />
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Transition Spacer with Divider */}
+      <section className="bg-[#F8F7F5] py-20 md:py-32">
+        <div className="flex items-center justify-center">
+          <div className="h-[1px] w-20 bg-[#8B7355]/20" />
+        </div>
+      </section>
+
       {/* Brigade Introduction Section */}
-      <section className="relative w-full h-[70vh] md:h-[70vh] min-h-[500px] overflow-hidden">
+      <section 
+        ref={brigadeRef}
+        className={`relative w-full h-[70vh] md:h-[70vh] min-h-[500px] overflow-hidden transition-opacity duration-[600ms] ease-out ${
+          isBrigadeVisible ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
@@ -134,11 +171,15 @@ const LandingPage = () => {
           />
         </div>
         
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/75 via-[#2C2C2C]/40 via-50% to-transparent" />
+        {/* Enhanced Gradient Overlay - Multiple stops for smoother blend */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/80 via-[#2C2C2C]/50 via-40% via-[#2C2C2C]/25 via-70% to-transparent" />
         
-        {/* Text Content */}
-        <div className="absolute inset-x-0 bottom-0 pb-6 px-6 text-center animate-fade-in">
+        {/* Text Content with delayed fade */}
+        <div 
+          className={`absolute inset-x-0 bottom-0 pb-6 px-6 text-center transition-opacity duration-[600ms] ease-out ${
+            isBrigadeVisible ? 'opacity-100 delay-200' : 'opacity-0'
+          }`}
+        >
           <div className="max-w-[900px] mx-auto">
             <h2 className="font-['Playfair_Display'] text-[36px] md:text-[56px] font-semibold text-white leading-tight mb-4" style={{ letterSpacing: '-0.5px' }}>
               Your Personal Kitchen Brigade
