@@ -149,7 +149,7 @@ const LandingPage = () => {
       </section>
 
       {/* Transition Spacer with Divider */}
-      <section className="bg-[#F8F7F5] py-20 md:py-32">
+      <section className="bg-[#F8F7F5] py-10 md:py-16">
         <div className="flex items-center justify-center">
           <div className="h-[1px] w-20 bg-[#8B7355]/20" />
         </div>
