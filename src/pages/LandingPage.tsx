@@ -194,10 +194,6 @@ const LandingPage = () => {
       {/* Solution Section */}
       <section className="py-16 md:py-24 px-6 bg-[#F8F7F5]">
         <div className="max-w-6xl mx-auto">
-          <h2 className="font-['Playfair_Display'] text-[18px] md:text-[20px] font-semibold text-[#2C2C2C] text-center mb-12">
-            Meet Your AI Culinary Advisor
-          </h2>
-          
           {/* Feature Images Grid */}
           <div className="grid md:grid-cols-2 gap-6 mb-16">
             <img src={heroDish} alt="Beautiful plated dish" className="rounded-xl shadow-refined-md w-full h-64 object-cover" />
