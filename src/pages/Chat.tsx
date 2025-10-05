@@ -309,7 +309,8 @@ const Index = () => {
               role={message.role}
               timestamp={message.timestamp}
               onViewRecipe={(recipe) => {
-                setCurrentRecipe(recipe);
+                console.log('[Chat] View recipe clicked, imageUrl:', recipe.imageUrl);
+                setCurrentRecipe({ ...recipe }); // Clone to ensure fresh state
                 setIsFromLibrary(false);
                 setIsRecipeSheetOpen(true);
               }}

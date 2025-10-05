@@ -118,6 +118,7 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
   const { recipe, cleanText, parseStatus } = extractRecipe(message);
   const displayMessage = cleanText || message;
   const [imageRequested, setImageRequested] = useState(false);
+  const [recipeWithImage, setRecipeWithImage] = useState<Recipe | null>(recipe);
 
   // Trigger background image generation only once per unique recipe
   useEffect(() => {
@@ -127,9 +128,10 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
       
       generateRecipeImage(recipe.title, recipe.id)
         .then(result => {
-          if (result.imageUrl && recipe) {
-            recipe.imageUrl = result.imageUrl;
+          if (result.imageUrl) {
             console.log('[ChatBubble] Image URL received:', result.imageUrl);
+            // Update state instead of mutating the recipe object
+            setRecipeWithImage({ ...recipe, imageUrl: result.imageUrl });
           }
         })
         .catch(err => {
@@ -137,7 +139,7 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
           setImageRequested(false); // Allow retry on error
         });
     }
-  }, [recipe?.id, recipe?.title, onViewRecipe, imageRequested]);
+  }, [recipe?.id, recipe?.title, onViewRecipe, imageRequested, recipe]);
 
   return (
     <div 
@@ -148,7 +150,11 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
     >
       {recipe && onViewRecipe && (
         <Button
-          onClick={() => onViewRecipe(recipe)}
+          onClick={() => {
+            const recipeToView = recipeWithImage || recipe;
+            console.log('[ChatBubble] View Recipe clicked, imageUrl:', recipeToView.imageUrl);
+            onViewRecipe(recipeToView);
+          }}
           className="mb-3"
           size="sm"
         >
@@ -180,7 +186,11 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
       
       {recipe && onViewRecipe && (
         <Button
-          onClick={() => onViewRecipe(recipe)}
+          onClick={() => {
+            const recipeToView = recipeWithImage || recipe;
+            console.log('[ChatBubble] View Recipe clicked, imageUrl:', recipeToView.imageUrl);
+            onViewRecipe(recipeToView);
+          }}
           className="mt-3"
           size="sm"
         >

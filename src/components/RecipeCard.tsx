@@ -18,6 +18,8 @@ interface RecipeCardProps {
 }
 
 export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLibrary = false, onOpenLibrary }: RecipeCardProps) => {
+  console.log('[RecipeCard] Rendering with imageUrl:', recipe.imageUrl);
+  
   const renderActionButtons = () => (
     <>
       {isFromLibrary ? (
@@ -68,7 +70,9 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
             alt={recipe.title}
             className="w-full h-[300px] sm:h-[400px] object-cover rounded-t-lg"
             loading="lazy"
+            onLoad={() => console.log('[RecipeCard] Image loaded successfully:', recipe.imageUrl)}
             onError={(e) => {
+              console.error('[RecipeCard] Image failed to load:', recipe.imageUrl);
               e.currentTarget.style.display = 'none';
             }}
           />
