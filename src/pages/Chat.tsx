@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, BookOpen, ChevronDown, User, Settings, MoreVertical, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -277,11 +277,13 @@ const Index = () => {
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-6 border-b border-border bg-background shadow-refined">
         <div className="flex items-center gap-3">
-          <img 
-            src={logoLight} 
-            alt="Culinary Advisor" 
-            className="h-12 w-12"
-          />
+          <Link to="/" className="transition-opacity hover:opacity-80">
+            <img 
+              src={logoLight} 
+              alt="Culinary Advisor" 
+              className="h-12 w-12"
+            />
+          </Link>
           <h1 className="text-xl sm:text-2xl font-serif font-semibold text-foreground">
             Culinary Advisor
           </h1>
