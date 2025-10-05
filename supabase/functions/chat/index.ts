@@ -70,10 +70,14 @@ You must follow this exact Markdown structure for all recipes:
 
 *Present as a Markdown table with ingredients ordered by usage sequence. Include recipe yield clearly.*
 
-| Ingredient | Weight (g/oz) | Volume (cups, tbsp, etc.) | Notes/Preparation |
-|------------|--------------|--------------------------|-------------------|
+| Ingredient | Weight (g) | Weight (oz) | Volume | Notes/Preparation |
+|------------|-----------|------------|--------|-------------------|
 
-*Measurements must show weight first (grams or ounces), followed by volumetric equivalents.*
+*Measurement guidelines:*
+- **Solid ingredients** (meat, vegetables, dairy): Provide weight in grams and ounces, plus volume equivalents
+- **Liquids** (oils, juices, water): Provide fluid ounces (fl oz) in the weight column, plus volume measurements (tbsp, cups)
+- **Small amounts** (spices, seasonings, zests): Use dashes (—) for weight columns when impractical to weigh, provide volume only
+- Always include volume measurements for usability
 
 ### 5. Step By Step Instructions
 
