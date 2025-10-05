@@ -138,31 +138,14 @@ const LandingPage = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/75 via-[#2C2C2C]/40 via-50% to-transparent" />
         
         {/* Text Content */}
-        <div className="absolute inset-x-0 bottom-0 pb-8 md:pb-12 px-6 text-center animate-fade-in">
+        <div className="absolute inset-x-0 bottom-0 pb-6 px-6 text-center animate-fade-in">
           <div className="max-w-[900px] mx-auto">
             <h2 className="font-['Playfair_Display'] text-[36px] md:text-[56px] font-semibold text-white leading-tight mb-4" style={{ letterSpacing: '-0.5px' }}>
               Your Personal Kitchen Brigade
             </h2>
-            <p className="font-['Inter'] text-[18px] md:text-[22px] text-white/85 leading-relaxed max-w-[700px] mx-auto mb-10">
+            <p className="font-['Inter'] text-[18px] md:text-[22px] text-white/85 leading-relaxed max-w-[700px] mx-auto">
               Seven specialists. One Sous Chef. Professional results in your home kitchen.
             </p>
-            
-            {/* Scroll Indicator */}
-            <div className="flex justify-center animate-bounce">
-              <svg 
-                className="w-6 h-6 text-white/70" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
           </div>
         </div>
       </section>
