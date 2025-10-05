@@ -120,41 +120,99 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
                   <div
                     key={saved.id}
                     onClick={() => handleRecipeClick(recipe)}
-                    className="relative border border-border rounded-lg p-6 hover:shadow-refined-md transition-all duration-200 cursor-pointer bg-background group"
+                    className={cn(
+                      "relative rounded-lg overflow-hidden hover:shadow-refined-md transition-all duration-200 cursor-pointer group h-[300px]",
+                      recipe.imageUrl 
+                        ? "bg-cover bg-center" 
+                        : "bg-gradient-to-br from-secondary to-muted border border-border"
+                    )}
+                    style={recipe.imageUrl ? {
+                      backgroundImage: `url(${recipe.imageUrl})`
+                    } : undefined}
                   >
+                    {/* Full-card darkening scrim - only if image exists */}
+                    {recipe.imageUrl && (
+                      <div 
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.50) 100%)'
+                        }}
+                      />
+                    )}
+                    
+                    {/* Content protection panel - only if image exists */}
+                    {recipe.imageUrl && (
+                      <div 
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to top, rgba(44,44,44,0.85) 0%, rgba(44,44,44,0.65) 60%, transparent 100%)'
+                        }}
+                      />
+                    )}
+
                     {/* Delete Button */}
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={(e) => handleDeleteClick(e, saved.id, recipe.title)}
-                      className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 sm:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      className={cn(
+                        "absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 sm:opacity-100 transition-opacity z-10",
+                        recipe.imageUrl
+                          ? "text-white/90 hover:text-white hover:bg-red-500/90 bg-black/30 backdrop-blur-sm"
+                          : "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      )}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
 
-                    <h3 className="font-serif text-xl font-semibold text-foreground mb-3 line-clamp-2 pr-8">
-                      {recipe.title}
-                    </h3>
-                    
-                    {/* Category and Difficulty */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="secondary" className="px-3 py-1 text-xs">
-                        {recipe.category}
-                      </Badge>
-                      <span className="text-muted-foreground">•</span>
-                      <Badge variant="outline" className={cn("px-3 py-1 text-xs", config.className)}>
-                        {config.label}
-                      </Badge>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>Prep: {recipe.prepTime}</span>
+                    {/* Content container */}
+                    <div className="relative h-full flex flex-col justify-end p-6 z-[1]">
+                      <h3 className={cn(
+                        "font-serif text-xl font-semibold mb-3 line-clamp-2 pr-8",
+                        recipe.imageUrl 
+                          ? "text-white drop-shadow-md" 
+                          : "text-foreground"
+                      )}>
+                        {recipe.title}
+                      </h3>
+                      
+                      {/* Category and Difficulty */}
+                      <div className="flex items-center gap-2 mb-3 flex-wrap">
+                        <Badge 
+                          variant="secondary" 
+                          className={cn(
+                            "px-3 py-1 text-xs",
+                            recipe.imageUrl && "bg-white/20 text-white border-white/40 backdrop-blur-sm hover:bg-white/30"
+                          )}
+                        >
+                          {recipe.category}
+                        </Badge>
+                        <span className={recipe.imageUrl ? "text-white/70" : "text-muted-foreground"}>•</span>
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "px-3 py-1 text-xs",
+                            recipe.imageUrl 
+                              ? "bg-white/20 text-white border-white/40 backdrop-blur-sm hover:bg-white/30"
+                              : config.className
+                          )}
+                        >
+                          {config.label}
+                        </Badge>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <ChefHat className="w-4 h-4" />
-                        <span>Cook: {recipe.cookTime}</span>
+
+                      <div className={cn(
+                        "flex items-center gap-3 text-sm",
+                        recipe.imageUrl ? "text-white/90" : "text-muted-foreground"
+                      )}>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>Prep: {recipe.prepTime}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <ChefHat className="w-4 h-4" />
+                          <span>Cook: {recipe.cookTime}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
