@@ -121,19 +121,24 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
                     key={saved.id}
                     onClick={() => handleRecipeClick(recipe)}
                     className={cn(
-                      "relative rounded-lg overflow-hidden hover:shadow-refined-md transition-all duration-200 cursor-pointer group h-[300px]",
-                      recipe.imageUrl 
-                        ? "bg-cover bg-center" 
-                        : "bg-gradient-to-br from-secondary to-muted border border-border"
+                      "relative rounded-lg overflow-hidden shadow-refined transition-all duration-300 cursor-pointer group h-[300px]",
+                      "lg:hover:shadow-refined-lg lg:hover:-translate-y-1",
+                      !recipe.imageUrl && "bg-gradient-to-br from-secondary to-muted border border-border"
                     )}
-                    style={recipe.imageUrl ? {
-                      backgroundImage: `url(${recipe.imageUrl})`
-                    } : undefined}
                   >
-                    {/* Full-card darkening scrim - only if image exists */}
+                    {/* Image layer with scale effect - desktop only */}
                     {recipe.imageUrl && (
                       <div 
-                        className="absolute inset-0 pointer-events-none"
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-300 ease-out lg:group-hover:scale-105"
+                        style={{
+                          backgroundImage: `url(${recipe.imageUrl})`
+                        }}
+                      />
+                    )}
+                    {/* Full-card darkening scrim - reduces on hover to reveal more image */}
+                    {recipe.imageUrl && (
+                      <div 
+                        className="absolute inset-0 pointer-events-none transition-opacity duration-300 ease-out lg:group-hover:opacity-40"
                         style={{
                           background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.50) 100%)'
                         }}
