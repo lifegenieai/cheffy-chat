@@ -70,14 +70,15 @@ You must follow this exact Markdown structure for all recipes:
 
 *Present as a Markdown table with ingredients ordered by usage sequence. Include recipe yield clearly.*
 
-| Ingredient | Weight (g) | Weight (oz) | Volume | Notes/Preparation |
-|------------|-----------|------------|--------|-------------------|
+| Ingredient | Weight | Volume | Notes/Preparation |
+|------------|--------|--------|-------------------|
 
 *Measurement guidelines:*
-- **Solid ingredients** (meat, vegetables, dairy): Provide weight in grams and ounces, plus volume equivalents
-- **Liquids** (oils, juices, water): Provide fluid ounces (fl oz) in the weight column, plus volume measurements (tbsp, cups)
-- **Small amounts** (spices, seasonings, zests): Use dashes (—) for weight columns when impractical to weigh, provide volume only
-- Always include volume measurements for usability
+- **Solid ingredients**: Provide weight in grams (e.g., "250g", "1.5kg")
+- **Liquids**: Provide weight in milliliters (e.g., "120ml", "500ml")
+- **Small amounts** (spices, seasonings, zests): Use dashes (—) when impractical to weigh
+- Always include volume measurements for usability (cups, tbsp, tsp, etc.)
+- **Metric only** - no imperial measurements
 
 ### 5. Step By Step Instructions
 
@@ -122,10 +123,9 @@ CRITICAL: After completing your markdown recipe, you MUST append the structured 
   "ingredients": [
     {
       "name": "Ingredient name",
-      "weightGrams": 100,
-      "weightOz": 3.5,
-      "volume": "1 cup",
-      "notes": "preparation notes"
+      "weight": "250g",
+      "volume": "1 cup / 240ml",
+      "notes": "preparation notes if applicable"
     }
   ],
   "instructions": [

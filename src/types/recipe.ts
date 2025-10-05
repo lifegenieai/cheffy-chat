@@ -22,8 +22,7 @@ export interface Recipe {
   // Ingredients
   ingredients: Array<{
     name: string;
-    weightGrams?: number;
-    weightOz?: number;
+    weight?: string;
     volume?: string;
     notes?: string;
   }>;
