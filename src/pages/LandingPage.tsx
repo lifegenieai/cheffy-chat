@@ -105,12 +105,10 @@ const LandingPage = () => {
           <div className="max-w-xl text-center">
             <img src={logo} alt="Culinary Advisor" className="w-24 h-24 mx-auto mb-6" />
             <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">
-              CulinaryAdvisor.ai
-              <br />
-              <span className="block mt-2">Your Personal Culinary Mentor</span>
+              Culinary Expertise You Can Trust
             </h1>
             <p className="font-['Inter'] text-[16px] md:text-[18px] text-[#6B6B6B] leading-relaxed mb-8">
-              A Michelin-star chef in your pocket. Learn, cook, and master recipes with AI-powered guidance every step of the way.
+              Your personal kitchen brigade: Executive Chef, Sous Chef, and seven specialists who guide you through every step, answer every question, and help when things go wrong.
             </p>
             <Button onClick={handleAuthAction} className="h-12 md:h-14 px-8 text-base font-medium bg-[#8B7355] hover:bg-[#8B7355]/90 text-white transition-all duration-200 shadow-refined mx-auto">
               {getAuthButtonText()}
