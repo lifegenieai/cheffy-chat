@@ -227,50 +227,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-16 md:py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-['Playfair_Display'] text-[18px] md:text-[20px] font-semibold text-[#2C2C2C] text-center mb-12">
-            From Idea to Plate in Minutes
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#8B7355] text-white flex items-center justify-center text-2xl font-['Playfair_Display'] font-semibold mx-auto mb-4">
-                1
-              </div>
-              <h3 className="font-['Inter'] text-[16px] md:text-[18px] font-semibold text-[#2C2C2C] mb-2">
-                Chat
-              </h3>
-              <p className="font-['Inter'] text-[14px] md:text-[16px] text-[#6B6B6B] leading-relaxed">
-                Describe what you want to cook
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#8B7355] text-white flex items-center justify-center text-2xl font-['Playfair_Display'] font-semibold mx-auto mb-4">
-                2
-              </div>
-              <h3 className="font-['Inter'] text-[16px] md:text-[18px] font-semibold text-[#2C2C2C] mb-2">
-                Customize
-              </h3>
-              <p className="font-['Inter'] text-[14px] md:text-[16px] text-[#6B6B6B] leading-relaxed">
-                Adapt to your preferences and equipment
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#8B7355] text-white flex items-center justify-center text-2xl font-['Playfair_Display'] font-semibold mx-auto mb-4">
-                3
-              </div>
-              <h3 className="font-['Inter'] text-[16px] md:text-[18px] font-semibold text-[#2C2C2C] mb-2">
-                Cook
-              </h3>
-              <p className="font-['Inter'] text-[14px] md:text-[16px] text-[#6B6B6B] leading-relaxed">
-                Follow guided steps with timers and support
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Final CTA Section */}
       <section className="relative py-24 md:py-32 px-6 overflow-hidden">
         <div className="absolute inset-0">
