@@ -36,7 +36,7 @@ const Index = () => {
     {
       id: "1",
       role: "assistant",
-      content: "Good day. I'm your culinary advisor, here to guide you through recipes, techniques, and ingredient selections with precision and expertise. How may I assist you today?",
+      content: "Welcome. I'm your culinary advisor, supported by a brigade of seven specialist chefs. Together, we'll guide you through recipes, techniques, and ingredients with the precision of a professional kitchen. How may I assist you today?",
       timestamp: new Date()
     }
   ]);
@@ -67,7 +67,7 @@ const Index = () => {
       {
         id: "1",
         role: "assistant",
-        content: "Good day. I'm your culinary advisor, here to guide you through recipes, techniques, and ingredient selections with precision and expertise. How may I assist you today?",
+        content: "Welcome. I'm your culinary advisor, supported by a brigade of seven specialist chefs. Together, we'll guide you through recipes, techniques, and ingredients with the precision of a professional kitchen. How may I assist you today?",
         timestamp: new Date()
       }
     ]);
