@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
-import { MessageCircle, Clock, BookOpen, ChefHat, Utensils, ChevronDown } from "lucide-react";
+import { Users, Headset, GraduationCap, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import heroDish from "@/assets/hero-dish.png";
 import cookingProcess from "@/assets/cooking-process.png";
@@ -208,36 +208,40 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Solution Section */}
-      <section className="py-16 md:py-20 px-6 bg-[#F8F7F5]">
-        <div className="max-w-6xl mx-auto">
-          {/* Benefits */}
-          <div className="grid md:grid-cols-3 gap-12 md:gap-16">
-            <div className="text-center">
-              <MessageCircle className="w-10 h-10 text-[#8B7355] mx-auto mb-4" strokeWidth={1.5} />
-              <h3 className="font-['Inter'] text-[16px] md:text-[18px] font-semibold text-[#2C2C2C] mb-2">
-                Ask anything, anytime
+      {/* Feature Section */}
+      <section className="py-20 px-6 bg-[#F8F7F5]">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="grid md:grid-cols-3 gap-16 md:gap-10 lg:gap-16">
+            {/* Column 1 */}
+            <div className="text-center flex flex-col items-center">
+              <Users size={52} strokeWidth={1.5} color="#8B7355" aria-hidden="true" className="mb-6" />
+              <h3 className="font-['Playfair_Display'] text-[22px] font-semibold text-[#2C2C2C] mb-3 leading-tight">
+                Built by Specialists
               </h3>
-              <p className="font-['Inter'] text-[14px] md:text-[16px] text-[#6B6B6B] leading-relaxed">
-                Get instant answers and recipe modifications
+              <p className="font-['Inter'] text-[16px] text-[#2C2C2C]/80 leading-relaxed max-w-[280px]">
+                Seven chefs collaborate on every recipe, then your Sous Chef pressure-tests for your kitchen.
               </p>
             </div>
-            <div className="text-center">
-              <Clock className="w-10 h-10 text-[#8B7355] mx-auto mb-4" strokeWidth={1.5} />
-              <h3 className="font-['Inter'] text-[16px] md:text-[18px] font-semibold text-[#2C2C2C] mb-2">
-                Cook with confidence
+
+            {/* Column 2 */}
+            <div className="text-center flex flex-col items-center">
+              <Headset size={52} strokeWidth={1.5} color="#8B7355" aria-hidden="true" className="mb-6" />
+              <h3 className="font-['Playfair_Display'] text-[22px] font-semibold text-[#2C2C2C] mb-3 leading-tight">
+                Always There to Help
               </h3>
-              <p className="font-['Inter'] text-[14px] md:text-[16px] text-[#6B6B6B] leading-relaxed">
-                Step-by-step guidance with built-in timers
+              <p className="font-['Inter'] text-[16px] text-[#2C2C2C]/80 leading-relaxed max-w-[280px]">
+                Troubleshoot in real-time when things go wrong. Adapt when ingredients differ.
               </p>
             </div>
-            <div className="text-center">
-              <ChefHat className="w-10 h-10 text-[#8B7355] mx-auto mb-4" strokeWidth={1.5} />
-              <h3 className="font-['Inter'] text-[16px] md:text-[18px] font-semibold text-[#2C2C2C] mb-2">
-                Build your collection
+
+            {/* Column 3 */}
+            <div className="text-center flex flex-col items-center">
+              <GraduationCap size={52} strokeWidth={1.5} color="#8B7355" aria-hidden="true" className="mb-6" />
+              <h3 className="font-['Playfair_Display'] text-[22px] font-semibold text-[#2C2C2C] mb-3 leading-tight">
+                Learn, Don't Just Follow
               </h3>
-              <p className="font-['Inter'] text-[14px] md:text-[16px] text-[#6B6B6B] leading-relaxed">
-                Recipes adapt to your kitchen and preferences
+              <p className="font-['Inter'] text-[16px] text-[#2C2C2C]/80 leading-relaxed max-w-[280px]">
+                Master techniques like emulsification and knife skills. Build lasting knowledge.
               </p>
             </div>
           </div>
