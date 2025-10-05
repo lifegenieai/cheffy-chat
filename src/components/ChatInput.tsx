@@ -33,7 +33,7 @@ const ChatInput = ({ onSendMessage, disabled = false }: ChatInputProps) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask me anything about recipes, techniques, or ingredients..."
+            placeholder="What shall we prepare?"
             disabled={disabled}
             className="flex-1 resize-none rounded-xl border border-input bg-background px-4 py-3.5 text-base leading-relaxed shadow-sm transition-standard placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 min-h-[56px] max-h-32"
             rows={1}
