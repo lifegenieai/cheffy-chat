@@ -7,6 +7,7 @@ import heroDish from "@/assets/hero-dish.png";
 import cookingProcess from "@/assets/cooking-process.png";
 import kitchenPrep from "@/assets/kitchen-prep.png";
 import culinaryAchievement from "@/assets/culinary-achievement.png";
+import brigadeTeam from "@/assets/brigade-team.png";
 import logo from "@/assets/logo.png";
 
 const LandingPage = () => {
@@ -122,30 +123,45 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="py-16 md:py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-['Playfair_Display'] text-[18px] md:text-[20px] font-semibold text-[#2C2C2C] text-center mb-12">
-            Cooking Shouldn't Feel This Hard
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            <div className="bg-[#E8E6E3] rounded-xl p-8 shadow-refined">
-              <BookOpen className="w-8 h-8 text-[#8B7355] mb-4" strokeWidth={1.5} />
-              <p className="font-['Inter'] text-[16px] md:text-[18px] text-[#2C2C2C] leading-relaxed">
-                Recipes buried in endless blog posts and ads
-              </p>
-            </div>
-            <div className="bg-[#E8E6E3] rounded-xl p-8 shadow-refined">
-              <MessageCircle className="w-8 h-8 text-[#8B7355] mb-4" strokeWidth={1.5} />
-              <p className="font-['Inter'] text-[16px] md:text-[18px] text-[#2C2C2C] leading-relaxed">
-                No one to ask when things go wrong
-              </p>
-            </div>
-            <div className="bg-[#E8E6E3] rounded-xl p-8 shadow-refined">
-              <Utensils className="w-8 h-8 text-[#8B7355] mb-4" strokeWidth={1.5} />
-              <p className="font-['Inter'] text-[16px] md:text-[18px] text-[#2C2C2C] leading-relaxed">
-                Static instructions that can't adapt to your kitchen
-              </p>
+      {/* Brigade Introduction Section */}
+      <section className="relative w-full h-[70vh] md:h-[70vh] min-h-[500px] overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img 
+            src={brigadeTeam} 
+            alt="Professional kitchen brigade team" 
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/75 via-[#2C2C2C]/40 via-50% to-transparent" />
+        
+        {/* Text Content */}
+        <div className="absolute inset-x-0 bottom-0 pb-20 md:pb-20 px-6 text-center animate-fade-in">
+          <div className="max-w-[900px] mx-auto">
+            <h2 className="font-['Playfair_Display'] text-[36px] md:text-[56px] font-semibold text-white leading-tight mb-4" style={{ letterSpacing: '-0.5px' }}>
+              Your Personal Kitchen Brigade
+            </h2>
+            <p className="font-['Inter'] text-[18px] md:text-[22px] text-white/85 leading-relaxed max-w-[700px] mx-auto mb-10">
+              Seven specialists. One Sous Chef. Professional results in your home kitchen.
+            </p>
+            
+            {/* Scroll Indicator */}
+            <div className="flex justify-center animate-bounce">
+              <svg 
+                className="w-6 h-6 text-white/70" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </div>
           </div>
         </div>
