@@ -4,6 +4,7 @@ import { RecipeMetadata } from "./recipe/RecipeMetadata";
 import { RecipeIngredients } from "./recipe/RecipeIngredients";
 import { RecipeInstructions } from "./recipe/RecipeInstructions";
 import { RecipeNutrition } from "./recipe/RecipeNutrition";
+import { RecipeIntroduction } from "./recipe/RecipeIntroduction";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Bookmark, Edit3, Check, Play } from "lucide-react";
@@ -94,10 +95,8 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
       />
       
       {recipe.introduction && (
-        <div className="py-6 border-b border-border">
-          <p className="text-base text-foreground leading-relaxed whitespace-pre-line">
-            {recipe.introduction}
-          </p>
+        <div className="py-8 border-b border-border">
+          <RecipeIntroduction text={recipe.introduction} />
         </div>
       )}
       

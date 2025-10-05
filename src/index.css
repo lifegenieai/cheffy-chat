@@ -146,6 +146,33 @@ All colors MUST be HSL.
     transition-duration: 200ms;
   }
 
+  /* Recipe Introduction - Magazine Typography */
+  .recipe-introduction {
+    max-width: 65ch;
+  }
+
+  .first-paragraph::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5em;
+    line-height: 0.9;
+    float: left;
+    margin: 0.1em 0.1em 0 0;
+    color: hsl(var(--primary));
+    font-weight: 600;
+  }
+
+  /* Mobile optimizations for drop cap */
+  @media (max-width: 767px) {
+    .first-paragraph::first-letter {
+      font-size: 2.5em;
+      margin-right: 0.08em;
+    }
+    
+    .recipe-introduction {
+      max-width: 100%;
+    }
+  }
+
   /* Michelin-Quality Markdown Styling */
   .culinary-markdown h1 {
     font-family: 'Playfair Display', Georgia, serif;
