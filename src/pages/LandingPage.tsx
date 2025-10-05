@@ -202,7 +202,7 @@ const LandingPage = () => {
               Your Personal Kitchen Brigade
             </h2>
             <p className="font-['Inter'] text-[18px] md:text-[22px] text-white/85 leading-relaxed max-w-[700px] mx-auto">
-              Executive Chef and his team of specialists. Professional Results in your home kitchen.
+              Executive Chef and his team of specialists. Professional results in your home kitchen.
             </p>
           </div>
         </div>
