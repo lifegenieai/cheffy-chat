@@ -140,9 +140,14 @@ const LandingPage = () => {
               </p>
             )}
             
+            {/* Meet the Team Text */}
+            <p className="font-['Inter'] text-sm text-[#6B6B6B] mt-12 mb-4">
+              Meet the Team
+            </p>
+            
             {/* Scroll Indicator */}
-            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
-              <ChevronDown className="w-8 h-8 text-[#8B7355]/60" strokeWidth={1.5} />
+            <div className="animate-bounce">
+              <ChevronDown className="w-8 h-8 text-[#8B7355]/60 mx-auto" strokeWidth={1.5} />
             </div>
           </div>
         </div>
