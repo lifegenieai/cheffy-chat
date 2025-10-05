@@ -192,16 +192,10 @@ const LandingPage = () => {
       </section>
 
       {/* Solution Section */}
-      <section className="py-16 md:py-24 px-6 bg-[#F8F7F5]">
+      <section className="py-16 md:py-20 px-6 bg-[#F8F7F5]">
         <div className="max-w-6xl mx-auto">
-          {/* Feature Images Grid */}
-          <div className="grid md:grid-cols-2 gap-6 mb-16">
-            <img src={heroDish} alt="Beautiful plated dish" className="rounded-xl shadow-refined-md w-full h-64 object-cover" />
-            <img src={cookingProcess} alt="Cooking process" className="rounded-xl shadow-refined-md w-full h-64 object-cover" />
-          </div>
-
           {/* Benefits */}
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-12 md:gap-16">
             <div className="text-center">
               <MessageCircle className="w-10 h-10 text-[#8B7355] mx-auto mb-4" strokeWidth={1.5} />
               <h3 className="font-['Inter'] text-[16px] md:text-[18px] font-semibold text-[#2C2C2C] mb-2">
