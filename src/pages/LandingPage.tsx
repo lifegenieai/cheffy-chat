@@ -64,6 +64,10 @@ const LandingPage = () => {
     navigate('/');
   };
 
+  const scrollToBrigade = () => {
+    brigadeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return <div className="min-h-screen bg-[#F8F7F5]">
       {/* Header with Auth Links */}
       <header className="absolute top-0 right-0 left-0 z-10 px-6 py-4">
@@ -141,14 +145,21 @@ const LandingPage = () => {
             )}
             
             {/* Meet the Team Text */}
-            <p className="font-['Inter'] text-sm text-[#6B6B6B] mt-12 mb-4">
+            <button 
+              onClick={scrollToBrigade}
+              className="font-['Inter'] text-sm text-[#6B6B6B] mt-12 mb-4 hover:text-[#8B7355] transition-colors duration-200 cursor-pointer"
+            >
               Meet the Team
-            </p>
+            </button>
             
             {/* Scroll Indicator */}
-            <div className="animate-bounce">
-              <ChevronDown className="w-8 h-8 text-[#8B7355]/60 mx-auto" strokeWidth={1.5} />
-            </div>
+            <button 
+              onClick={scrollToBrigade}
+              className="animate-bounce cursor-pointer"
+              aria-label="Scroll to team section"
+            >
+              <ChevronDown className="w-8 h-8 text-[#8B7355]/60 mx-auto hover:text-[#8B7355] transition-colors duration-200" strokeWidth={1.5} />
+            </button>
           </div>
         </div>
       </section>
