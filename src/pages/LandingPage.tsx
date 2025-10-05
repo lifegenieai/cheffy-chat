@@ -126,8 +126,8 @@ const LandingPage = () => {
         </div>
 
         {/* Content Side */}
-        <div className="flex items-center justify-center px-6 py-16 lg:px-16 lg:py-24 pb-24 md:pb-32">
-          <div className="max-w-xl text-center relative">
+        <div className="relative flex items-center justify-center px-6 py-16 lg:px-16 lg:py-24">
+          <div className="max-w-xl text-center">
             <img src={logo} alt="Culinary Advisor" className="w-24 h-24 mx-auto mb-6" />
             <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">
               Culinary Expertise You Can Trust
@@ -143,22 +143,23 @@ const LandingPage = () => {
                 {isReturningUser ? 'Welcome back' : 'Create a free account to get started'}
               </p>
             )}
-            
-            {/* Meet the Team Text */}
+          </div>
+          
+          {/* Meet the Team Text & Scroll Indicator at Bottom */}
+          <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-3">
             <button 
               onClick={scrollToBrigade}
-              className="font-['Inter'] text-sm text-[#6B6B6B] mt-12 mb-4 hover:text-[#8B7355] transition-colors duration-200 cursor-pointer"
+              className="font-['Inter'] text-sm text-[#6B6B6B] hover:text-[#8B7355] transition-colors duration-200 cursor-pointer"
             >
               Meet the Team
             </button>
             
-            {/* Scroll Indicator */}
             <button 
               onClick={scrollToBrigade}
               className="animate-bounce cursor-pointer"
               aria-label="Scroll to team section"
             >
-              <ChevronDown className="w-8 h-8 text-[#8B7355]/60 mx-auto hover:text-[#8B7355] transition-colors duration-200" strokeWidth={1.5} />
+              <ChevronDown className="w-8 h-8 text-[#8B7355]/60 hover:text-[#8B7355] transition-colors duration-200" strokeWidth={1.5} />
             </button>
           </div>
         </div>
