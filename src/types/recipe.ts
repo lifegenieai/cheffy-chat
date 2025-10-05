@@ -13,7 +13,6 @@ export interface Recipe {
   
   // Content sections
   introduction: string;
-  historicalContext?: string;
   tips: string[];
   
   // Equipment and prep

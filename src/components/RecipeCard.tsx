@@ -95,14 +95,9 @@ export const RecipeCard = ({ recipe, onSave, onModify, isSaved = false, isFromLi
       
       {recipe.introduction && (
         <div className="py-6 border-b border-border">
-          <p className="text-base text-foreground leading-relaxed">
+          <p className="text-base text-foreground leading-relaxed whitespace-pre-line">
             {recipe.introduction}
           </p>
-          {recipe.historicalContext && (
-            <p className="text-base text-muted-foreground leading-relaxed mt-4 italic">
-              {recipe.historicalContext}
-            </p>
-          )}
         </div>
       )}
       
