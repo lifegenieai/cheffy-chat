@@ -138,7 +138,7 @@ const LandingPage = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/75 via-[#2C2C2C]/40 via-50% to-transparent" />
         
         {/* Text Content */}
-        <div className="absolute inset-x-0 bottom-0 pb-20 md:pb-20 px-6 text-center animate-fade-in">
+        <div className="absolute inset-x-0 bottom-0 pb-8 md:pb-12 px-6 text-center animate-fade-in">
           <div className="max-w-[900px] mx-auto">
             <h2 className="font-['Playfair_Display'] text-[36px] md:text-[56px] font-semibold text-white leading-tight mb-4" style={{ letterSpacing: '-0.5px' }}>
               Your Personal Kitchen Brigade
