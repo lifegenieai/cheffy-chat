@@ -33,9 +33,11 @@ export const useLibraryRecipes = () => {
         recipe_data: item.recipe_data as unknown as Recipe
       })) as SavedRecipe[]) || [];
     },
-    staleTime: 30000, // 30 seconds
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnMount: true,
-    retry: 2,
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnMount: false, // Changed to false to prevent refetch loops on mobile
+    retry: 1, // Reduced from 2 to 1 for faster failure on mobile
+    retryDelay: 1000, // 1 second between retries
+    networkMode: 'online', // Only run query when online
   });
 };

@@ -42,7 +42,7 @@ const ALL_CATEGORIES = [
 ] as const;
 
 export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibrarySheetProps) => {
-  const { data: savedRecipes, isLoading } = useLibraryRecipes();
+  const { data: savedRecipes, isLoading, isError, error } = useLibraryRecipes();
   const deleteRecipe = useDeleteRecipe();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [recipeToDelete, setRecipeToDelete] = useState<{ id: string; title: string } | null>(null);
@@ -129,7 +129,21 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
           ))}
         </div>
 
-        {isLoading ? (
+        {isError ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <ChefHat className="w-16 h-16 text-destructive mb-4" />
+            <p className="text-lg text-foreground mb-2">Failed to load recipes</p>
+            <p className="text-sm text-muted-foreground max-w-md mb-4">
+              {error instanceof Error ? error.message : 'Please check your connection and try again'}
+            </p>
+            <Button 
+              onClick={() => window.location.reload()}
+              variant="outline"
+            >
+              Retry
+            </Button>
+          </div>
+        ) : isLoading ? (
           <div className="grid gap-4 md:grid-cols-2">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="rounded-lg overflow-hidden shadow-refined h-[300px] bg-muted animate-pulse">
