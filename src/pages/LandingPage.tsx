@@ -76,7 +76,7 @@ const LandingPage = () => {
             <img src={logo} alt="Culinary Advisor" className="w-8 h-8" />
             <span className="font-['Playfair_Display'] text-lg font-semibold text-white">CulinaryAdvisor.ai</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-4">
             {user ? (
               <>
                 <Button
