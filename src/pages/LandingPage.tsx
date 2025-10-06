@@ -91,7 +91,7 @@ const LandingPage = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="w-10 h-10 text-white hover:text-white/80 hover:bg-white/10 transition-standard"
+                className="w-10 h-10 text-[#2C2C2C] hover:text-[#2C2C2C]/80 hover:bg-[#2C2C2C]/10 lg:text-white lg:hover:text-white/80 lg:hover:bg-white/10 transition-standard"
                 aria-label="Menu"
               >
                 <MoreVertical className="w-5 h-5" />
