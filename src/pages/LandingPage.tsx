@@ -78,7 +78,7 @@ const LandingPage = () => {
 
   return <div className="min-h-screen bg-[#F8F7F5]">
       {/* Header with Three-Dot Menu */}
-      <header className="absolute top-0 right-0 left-0 z-10 px-6 py-4">
+      <header className="fixed top-0 right-0 left-0 z-50 px-6 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <img src={logo} alt="Culinary Advisor" className="w-8 h-8" />
