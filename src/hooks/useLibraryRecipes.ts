@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Recipe } from "@/types/recipe";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SavedRecipe {
   id: string;
@@ -11,13 +12,13 @@ interface SavedRecipe {
 }
 
 export const useLibraryRecipes = () => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ["library-recipes"],
+    queryKey: ["library-recipes", user?.id],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("User not authenticated");
+      if (!user?.id) {
+        return [];
       }
 
       const { data, error } = await supabase
@@ -28,16 +29,20 @@ export const useLibraryRecipes = () => {
 
       if (error) throw error;
       
-      return (data?.map(item => ({
+      // Defensive: Filter out any recipes that don't match current user
+      const recipes = (data?.map(item => ({
         ...item,
         recipe_data: item.recipe_data as unknown as Recipe
       })) as SavedRecipe[]) || [];
+      
+      return recipes.filter(recipe => recipe.user_id === user.id);
     },
-    staleTime: 30000,
-    gcTime: 5 * 60 * 1000,
-    refetchOnMount: false, // Changed to false to prevent refetch loops on mobile
-    retry: 1, // Reduced from 2 to 1 for faster failure on mobile
-    retryDelay: 1000, // 1 second between retries
-    networkMode: 'online', // Only run query when online
+    enabled: !!user?.id,
+    // Prevent stale data across user sessions
+    staleTime: 0,
+    gcTime: 0,
+    retry: 1,
+    retryDelay: 1000,
+    networkMode: 'online',
   });
 };

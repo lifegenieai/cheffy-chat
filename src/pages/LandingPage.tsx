@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { Users, Headset, GraduationCap, ChevronDown, MoreVertical, MessageSquare, BookOpen, Settings, LogOut, LogIn } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,8 +21,10 @@ import logo from "@/assets/logo.png";
 const LandingPage = () => {
   const navigate = useNavigate();
   const { user, isReturningUser, signOut } = useAuth();
+  const { toast } = useToast();
   const [isBrigadeVisible, setIsBrigadeVisible] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const brigadeRef = useRef<HTMLElement>(null);
   
   useEffect(() => {
@@ -68,8 +71,27 @@ const LandingPage = () => {
   };
 
   const handleLogout = async () => {
-    await signOut();
-    navigate('/');
+    try {
+      setIsLoading(true);
+      await signOut();
+      toast({
+        title: "Logged out successfully",
+        description: "Your session has been cleared.",
+      });
+      // Small delay for toast visibility
+      setTimeout(() => {
+        window.location.href = '/'; // Force full page reload for clean state
+      }, 800);
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Logged out",
+        description: "Your session has been cleared.",
+      });
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 800);
+    }
   };
 
   const scrollToBrigade = () => {

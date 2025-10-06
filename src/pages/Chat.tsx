@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, BookOpen, ChevronDown, User, Settings, MoreVertical, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -52,13 +53,32 @@ const Index = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const saveRecipeMutation = useSaveRecipe();
   const { data: savedRecipes } = useLibraryRecipes();
 
   const handleLogout = async () => {
-    await signOut();
-    navigate('/');
+    try {
+      await signOut();
+      toast({
+        title: "Logged out successfully",
+        description: "Your session has been cleared.",
+      });
+      // Force full page reload to ensure completely clean state
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 800);
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Logged out",
+        description: "Your session has been cleared.",
+      });
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 800);
+    }
   };
 
   const handleNewChat = () => {
