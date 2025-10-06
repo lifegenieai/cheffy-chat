@@ -1,8 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
-import { Users, Headset, GraduationCap, ChevronDown } from "lucide-react";
+import { Users, Headset, GraduationCap, ChevronDown, MoreVertical, MessageSquare, BookOpen, Settings, LogOut, LogIn } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import heroDish from "@/assets/hero-dish.png";
 import cookingProcess from "@/assets/cooking-process.png";
 import kitchenPrep from "@/assets/kitchen-prep.png";
@@ -14,6 +21,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const { user, isReturningUser, signOut } = useAuth();
   const [isBrigadeVisible, setIsBrigadeVisible] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const brigadeRef = useRef<HTMLElement>(null);
   
   useEffect(() => {
@@ -69,49 +77,63 @@ const LandingPage = () => {
   };
 
   return <div className="min-h-screen bg-[#F8F7F5]">
-      {/* Header with Auth Links */}
+      {/* Header with Three-Dot Menu */}
       <header className="absolute top-0 right-0 left-0 z-10 px-6 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <img src={logo} alt="Culinary Advisor" className="w-8 h-8" />
             <span className="font-['Playfair_Display'] text-lg font-semibold text-white">CulinaryAdvisor.ai</span>
           </div>
-          <div className="hidden lg:flex items-center gap-4">
-            {user ? (
-              <>
-                <Button
-                  onClick={() => navigate('/chat')}
-                  variant="ghost"
-                  className="text-white hover:text-white/80"
-                >
-                  Chat
-                </Button>
-                <Button
-                  onClick={handleLogout}
-                  variant="ghost"
-                  className="text-white hover:text-white/80"
-                >
-                  Log Out
-                </Button>
-              </>
-            ) : (
-              <>
-                {isReturningUser ? (
-                  <Link to="/login">
-                    <Button className="bg-[#8B7355] hover:bg-[#8B7355]/90 text-white">
-                      Log In
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link to="/signup">
-                    <Button className="bg-[#8B7355] hover:bg-[#8B7355]/90 text-white">
-                      Sign Up
-                    </Button>
-                  </Link>
-                )}
-              </>
-            )}
-          </div>
+          
+          {/* Three-Dot Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10 h-10 text-white hover:text-white/80 hover:bg-white/10 transition-standard"
+                aria-label="Menu"
+              >
+                <MoreVertical className="w-5 h-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            
+            <DropdownMenuContent align="end" className="w-48 bg-background">
+              {user ? (
+                <>
+                  <DropdownMenuItem onClick={() => navigate('/chat')}>
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    <span>Chat</span>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={() => navigate('/chat')}>
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    <span>Library</span>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={() => navigate('/chat')}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="text-red-600 focus:text-red-600 dark:text-red-500 dark:focus:text-red-500"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log Out</span>
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onClick={() => navigate('/login')}>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  <span>Log In</span>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
