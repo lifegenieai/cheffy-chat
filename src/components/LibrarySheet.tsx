@@ -46,6 +46,9 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
   const deleteRecipe = useDeleteRecipe();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [recipeToDelete, setRecipeToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+  const RECIPES_PER_PAGE = 12;
 
   const handleRecipeClick = (recipe: Recipe) => {
     onOpenChange(false);
@@ -64,12 +67,17 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
     }
   };
 
-  const toggleCategory = (category: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
+
+  const handleImageError = (recipeId: string) => {
+    setImageErrors(prev => new Set(prev).add(recipeId));
+  };
+
+  const handleImageRetry = (recipeId: string) => {
+    setImageErrors(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(recipeId);
+      return newSet;
+    });
   };
 
   // Filter recipes based on selected categories
@@ -77,6 +85,22 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
     if (selectedCategories.length === 0) return true;
     return selectedCategories.includes(saved.recipe_data.category);
   }) || [];
+
+  // Pagination
+  const totalPages = Math.ceil(filteredRecipes.length / RECIPES_PER_PAGE);
+  const startIndex = (currentPage - 1) * RECIPES_PER_PAGE;
+  const endIndex = startIndex + RECIPES_PER_PAGE;
+  const paginatedRecipes = filteredRecipes.slice(startIndex, endIndex);
+
+  // Reset page when filters change
+  const toggleCategory = (category: string) => {
+    setCurrentPage(1);
+    setSelectedCategories(prev =>
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -106,13 +130,28 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Loading your recipes...</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="rounded-lg overflow-hidden shadow-refined h-[300px] bg-muted animate-pulse">
+                <div className="h-full flex flex-col justify-end p-6">
+                  <div className="h-6 bg-muted-foreground/20 rounded mb-3 w-3/4"></div>
+                  <div className="flex gap-2 mb-3">
+                    <div className="h-6 bg-muted-foreground/20 rounded w-20"></div>
+                    <div className="h-6 bg-muted-foreground/20 rounded w-20"></div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="h-4 bg-muted-foreground/20 rounded w-24"></div>
+                    <div className="h-4 bg-muted-foreground/20 rounded w-24"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : savedRecipes && savedRecipes.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2">
-            {filteredRecipes.length > 0 ? (
-              filteredRecipes.map((saved) => {
+          <>
+            <div className="grid gap-4 md:grid-cols-2">
+              {paginatedRecipes.length > 0 ? (
+                paginatedRecipes.map((saved) => {
                 const recipe = saved.recipe_data;
                 const config = difficultyConfig[recipe.difficulty];
                 
@@ -126,15 +165,33 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
                       !recipe.imageUrl && "bg-gradient-to-br from-secondary to-muted border border-border"
                     )}
                   >
-                    {/* Image layer with scale effect - desktop only */}
-                    {recipe.imageUrl && (
-                      <div 
-                        className="absolute inset-0 bg-cover bg-center transition-transform duration-300 ease-out lg:group-hover:scale-105"
-                        style={{
-                          backgroundImage: `url(${recipe.imageUrl})`
-                        }}
-                      />
-                    )}
+                    {/* Image layer with progressive loading */}
+                    {recipe.imageUrl && !imageErrors.has(saved.id) ? (
+                      <>
+                        <img
+                          src={recipe.imageUrl}
+                          alt={recipe.title}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out lg:group-hover:scale-105"
+                          loading="lazy"
+                          onError={() => handleImageError(saved.id)}
+                        />
+                      </>
+                    ) : imageErrors.has(saved.id) ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                        <div className="text-center">
+                          <ChefHat className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleImageRetry(saved.id);
+                            }}
+                            className="text-sm text-primary hover:underline"
+                          >
+                            Retry loading image
+                          </button>
+                        </div>
+                      </div>
+                    ) : null}
                     {/* Full-card darkening scrim - reduces on hover to reveal more image */}
                     {recipe.imageUrl && (
                       <div 
@@ -223,16 +280,42 @@ export const LibrarySheet = ({ open, onOpenChange, onRecipeSelect }: LibraryShee
                   </div>
                 );
               })
-            ) : (
-              <div className="col-span-2 flex flex-col items-center justify-center py-12 text-center">
-                <ChefHat className="w-16 h-16 text-muted-foreground mb-4" />
-                <p className="text-lg text-foreground mb-2">No {selectedCategories.join(', ')} recipes</p>
-                <p className="text-muted-foreground max-w-md">
-                  Try selecting different categories or clear your filters.
-                </p>
+              ) : (
+                <div className="col-span-2 flex flex-col items-center justify-center py-12 text-center">
+                  <ChefHat className="w-16 h-16 text-muted-foreground mb-4" />
+                  <p className="text-lg text-foreground mb-2">No {selectedCategories.join(', ')} recipes</p>
+                  <p className="text-muted-foreground max-w-md">
+                    Try selecting different categories or clear your filters.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
               </div>
             )}
-          </div>
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <ChefHat className="w-16 h-16 text-muted-foreground mb-4" />

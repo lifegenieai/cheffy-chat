@@ -48,6 +48,7 @@ export type Database = {
           dish_name: string
           id: string
           image_url: string
+          thumbnail_url: string | null
         }
         Insert: {
           cost?: number | null
@@ -55,6 +56,7 @@ export type Database = {
           dish_name: string
           id?: string
           image_url: string
+          thumbnail_url?: string | null
         }
         Update: {
           cost?: number | null
@@ -62,6 +64,7 @@ export type Database = {
           dish_name?: string
           id?: string
           image_url?: string
+          thumbnail_url?: string | null
         }
         Relationships: []
       }
