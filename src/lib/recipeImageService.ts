@@ -66,14 +66,30 @@ export async function generateRecipeImage(
 // Poll for image completion
 export async function pollForImage(
   dishName: string,
-  maxAttempts: number = 10,
+  maxAttempts: number = 15,
   intervalMs: number = 2000
 ): Promise<RecipeImageResult> {
+  const cacheKey = dishName.toLowerCase().trim();
+  
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const result = await generateRecipeImage(dishName, dishName, false);
+    console.log(`[ImageService] Polling attempt ${attempt + 1}/${maxAttempts} for: ${dishName}`);
     
-    if (result.imageUrl || result.error) {
-      return result;
+    // Query the database directly for the image
+    const { data, error } = await supabase
+      .from('recipe_images')
+      .select('image_url, thumbnail_url')
+      .eq('dish_name', cacheKey)
+      .maybeSingle();
+    
+    if (error) {
+      console.error('[ImageService] Database query error:', error);
+    } else if (data?.image_url) {
+      console.log('[ImageService] Image found in database:', data.image_url);
+      return {
+        imageUrl: data.image_url,
+        thumbnailUrl: data.thumbnail_url,
+        cached: true
+      };
     }
     
     if (attempt < maxAttempts - 1) {
@@ -81,6 +97,7 @@ export async function pollForImage(
     }
   }
   
+  console.warn('[ImageService] Polling timed out for:', dishName);
   return {
     imageUrl: null,
     thumbnailUrl: null,

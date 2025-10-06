@@ -56,4 +56,5 @@ export interface Recipe {
   
   // Image metadata
   imageUrl?: string;
+  thumbnailUrl?: string;
 }

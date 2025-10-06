@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { ChefHat } from "lucide-react";
 import { Recipe } from "@/types/recipe";
 import { useState, useEffect } from "react";
-import { generateRecipeImage } from "@/lib/recipeImageService";
+import { generateRecipeImage, pollForImage } from "@/lib/recipeImageService";
 
 interface ChatBubbleProps {
   message: string;
@@ -120,22 +120,40 @@ const ChatBubble = ({ message, role, timestamp, onViewRecipe }: ChatBubbleProps)
   const [imageRequested, setImageRequested] = useState(false);
   const [recipeWithImage, setRecipeWithImage] = useState<Recipe | null>(recipe);
 
-  // Trigger background image generation only once per unique recipe
+  // Trigger background image generation and poll for completion
   useEffect(() => {
     if (recipe && recipe.title && onViewRecipe && !imageRequested && !recipe.imageUrl) {
       console.log('[ChatBubble] Requesting image generation for:', recipe.title);
       setImageRequested(true);
       
-      generateRecipeImage(recipe.title, recipe.id)
-        .then(result => {
-          if (result.imageUrl) {
-            console.log('[ChatBubble] Image URL received:', result.imageUrl);
-            // Update state instead of mutating the recipe object
-            setRecipeWithImage({ ...recipe, imageUrl: result.imageUrl });
+      // Start async generation
+      generateRecipeImage(recipe.title, recipe.id, true)
+        .then(initialResult => {
+          console.log('[ChatBubble] Initial result:', initialResult);
+          
+          if (initialResult.imageUrl) {
+            // Image was cached or generated synchronously
+            console.log('[ChatBubble] Image URL received immediately:', initialResult.imageUrl);
+            setRecipeWithImage({ ...recipe, imageUrl: initialResult.imageUrl, thumbnailUrl: initialResult.thumbnailUrl });
+          } else if (initialResult.generating) {
+            // Image is being generated in background, poll for completion
+            console.log('[ChatBubble] Polling for image completion...');
+            pollForImage(recipe.title, 15, 2000)
+              .then(pollResult => {
+                if (pollResult.imageUrl) {
+                  console.log('[ChatBubble] Image URL received from polling:', pollResult.imageUrl);
+                  setRecipeWithImage({ ...recipe, imageUrl: pollResult.imageUrl, thumbnailUrl: pollResult.thumbnailUrl });
+                } else {
+                  console.warn('[ChatBubble] Polling completed but no image URL');
+                }
+              })
+              .catch(err => {
+                console.error('[ChatBubble] Polling failed:', err);
+              });
           }
         })
         .catch(err => {
-          console.error("Failed to generate recipe image:", err);
+          console.error('[ChatBubble] Failed to generate recipe image:', err);
           setImageRequested(false); // Allow retry on error
         });
     }
