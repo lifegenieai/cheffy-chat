@@ -146,7 +146,7 @@ const LandingPage = () => {
           </div>
           
           {/* Meet the Team Text & Scroll Indicator at Bottom */}
-          <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-3">
+          <div className="absolute bottom-24 md:bottom-16 lg:bottom-8 left-0 right-0 flex flex-col items-center gap-3">
             <button 
               onClick={scrollToBrigade}
               className="font-['Inter'] text-sm text-[#6B6B6B] hover:text-[#8B7355] transition-colors duration-200 cursor-pointer"
