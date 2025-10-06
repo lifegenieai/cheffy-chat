@@ -126,7 +126,7 @@ const LandingPage = () => {
         </div>
 
         {/* Content Side */}
-        <div className="relative flex items-center justify-center px-6 py-16 lg:px-16 lg:py-24">
+        <div className="relative flex flex-col items-center justify-center px-6 py-16 lg:px-16 lg:py-24">
           <div className="max-w-xl text-center">
             <img src={logo} alt="Culinary Advisor" className="w-24 h-24 mx-auto mb-6" />
             <h1 className="font-['Playfair_Display'] text-[32px] md:text-[34px] font-semibold text-[#2C2C2C] leading-tight mb-6">
@@ -145,8 +145,8 @@ const LandingPage = () => {
             )}
           </div>
           
-          {/* Meet the Team Text & Scroll Indicator at Bottom */}
-          <div className="absolute bottom-24 md:bottom-16 lg:bottom-8 left-0 right-0 flex flex-col items-center gap-3">
+          {/* Meet the Team Text & Scroll Indicator */}
+          <div className="flex flex-col items-center gap-3 mt-12 md:mt-16">
             <button 
               onClick={scrollToBrigade}
               className="font-['Inter'] text-sm text-[#6B6B6B] hover:text-[#8B7355] transition-colors duration-200 cursor-pointer"
